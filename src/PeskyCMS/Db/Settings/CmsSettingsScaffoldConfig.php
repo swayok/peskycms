@@ -54,7 +54,7 @@ class CmsSettingsScaffoldConfig extends KeyValueTableScaffoldConfig {
         /** @var CmsAppSettings $appSettings */
         $appSettings = app(CmsAppSettings::class);
         $settings = $appSettings::getAllValues(true);
-        $settings[$this->getTable()->getPkColumnName()] = 0;
+        $settings[static::getTable()->getPkColumnName()] = 0;
         return cmfJsonResponse()->setData($this->getFormConfig()->prepareRecord($settings));
     }
 
