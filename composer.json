@@ -1,0 +1,41 @@
+{
+    "name": "swayok/peskycms",
+    "type": "library",
+    "description": "CMS based on PeskyCMF and PeskyORM",
+    "keywords": [
+        "php",
+        "laravel",
+        "cms",
+        "peskyorm",
+        "peskycmf"
+    ],
+    "authors": [
+        {
+            "name": "Alexander Filippov"
+        }
+    ],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/swayok/peskycms/issues"
+    },
+    "autoload": {
+        "psr-0": {
+            "PeskyCMS": "/src"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=5.6",
+        "laravel/framework": "^5.2",
+        "swayok/peskycmf": "v2.x-dev",
+        "swayok/peskyorm": "v2.x-dev"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "PeskyCMS\\Providers\\PeskyCMSServiceProvider"
+            ]
+        }
+    }
+}

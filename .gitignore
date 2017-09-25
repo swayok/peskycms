@@ -1,0 +1,10 @@
+/public/demo
+/vendor
+/node_modules
+.env
+.idea
+/backup
+/none
+/components
+/_ide_helper.php
+/composer.lock
