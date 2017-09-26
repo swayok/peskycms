@@ -34,7 +34,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "PeskyCMS\\Providers\\PeskyCMSServiceProvider"
+                "PeskyCMS\\Providers\\PeskyCmsServiceProvider"
+            ],
+            "dont-discover": [
+                "PeskyCMF\\Providers\\PeskyCmfServiceProvider"
             ]
         }
     }
