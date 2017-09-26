@@ -2,9 +2,6 @@
 
 namespace PeskyCMS\Providers;
 
-use PeskyCMF\CMS\Redirects\CmsRedirect;
-use PeskyCMF\CMS\Redirects\CmsRedirectsTable;
-use PeskyCMF\CMS\Redirects\CmsRedirectsTableStructure;
 use PeskyCMF\Providers\PeskyCmfServiceProvider;
 use PeskyCMS\CmsAppSettings;
 use PeskyCMS\CmsFrontendUtils;
@@ -16,8 +13,8 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
     protected $appSettingsClass;
 
     public function register() {
-        $this->mergeConfigFrom($this->getCmsConfigFilePath(), 'cms');
-        $this->appSettingsClass = config('cms.app_settings_class') ?: CmsAppSettings::class;
+        $this->mergeConfigFrom($this->getCmsConfigFilePath(), 'peskycms');
+        $this->appSettingsClass = config('peskycms.app_settings_class') ?: CmsAppSettings::class;
 
         parent::register();
 
@@ -31,6 +28,13 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
 
 
         // note: scaffolds declared in CmsSiteLoader
+    }
+
+    protected function configurePublishes() {
+        parent::configurePublishes();
+        $this->publishes([
+            $this->getCmsConfigFilePath() => config_path('peskycms.php'),
+        ], 'config');
     }
 
     protected function registerCommands() {
@@ -69,7 +73,7 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
 
     // admins
 
-    public function registerAdminsDbClasses() {
+    /*public function registerAdminsDbClasses() {
         $this->registerAdminsDbRecordClassName();
         $this->registerAdminsDbTable();
         $this->registerAdminsDbTableStructure();
@@ -212,6 +216,6 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
         $this->app->singleton(CmsRedirectsTableStructure::class, function () {
             return CmsRedirectsTableStructure::getInstance();
         });
-    }
+    }*/
 
 }
