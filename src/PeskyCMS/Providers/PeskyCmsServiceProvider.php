@@ -7,6 +7,7 @@ use PeskyCMF\CMS\Redirects\CmsRedirectsTable;
 use PeskyCMF\CMS\Redirects\CmsRedirectsTableStructure;
 use PeskyCMF\Providers\PeskyCmfServiceProvider;
 use PeskyCMS\CmsAppSettings;
+use PeskyCMS\CmsFrontendUtils;
 use PeskyCMS\Console\Commands\CmsAddAdmin;
 use PeskyCMS\Console\Commands\CmsInstall;
 
@@ -41,6 +42,7 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
     public function boot() {
         parent::boot();
         require_once __DIR__ . '/../Config/helpers.php';
+        CmsFrontendUtils::registerBladeDirectiveForStringTemplateRendering();
     }
 
     protected function getCmsConfigFilePath() {
