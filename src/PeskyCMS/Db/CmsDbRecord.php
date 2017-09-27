@@ -3,11 +3,12 @@
 namespace PeskyCMS\Db;
 
 use PeskyCMF\Db\CmfDbRecord;
+use PeskyCMF\Db\CmfDbTableStructure;
 use PeskyCMS\Db\Settings\CmsSettingsTable;
 use PeskyORMLaravel\Db\KeyValueTableUtils\KeyValueTableInterface;
 
 /**
- * @method static CmsDbTableStructure getTableStructure()
+ * @method static CmfDbTableStructure getTableStructure()
  */
 abstract class CmsDbRecord extends CmfDbRecord {
 

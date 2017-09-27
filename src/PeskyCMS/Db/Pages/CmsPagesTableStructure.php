@@ -2,8 +2,8 @@
 
 namespace PeskyCMS\Db\Pages;
 
-use PeskyCMS\Db\CmsDbTableStructure;
-use PeskyCMS\Db\TableStructureTraits\AdminIdColumn;
+use PeskyCMF\Db\CmfDbTableStructure;
+use PeskyCMF\Db\TableStructureTraits\AdminIdColumn;
 use PeskyCMS\Db\Texts\CmsTextsTable;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\RecordValue;
@@ -33,7 +33,7 @@ use PeskyORMLaravel\Db\TableStructureTraits\TimestampColumns;
  * @property-read Column    $updated_at
  * @property-read Column    $custom_info
  */
-class CmsPagesTableStructure extends CmsDbTableStructure {
+class CmsPagesTableStructure extends CmfDbTableStructure {
 
     use IdColumn,
         AdminIdColumn,

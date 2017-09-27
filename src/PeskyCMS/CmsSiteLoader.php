@@ -5,8 +5,8 @@ namespace PeskyCMS;
 use PeskyCMF\CMS\Redirects\CmsRedirectsScaffoldConfig;
 use PeskyCMF\CMS\Redirects\CmsRedirectsTable;
 use PeskyCMF\Http\PeskyCmfSiteLoader;
-use PeskyCMS\Db\Admins\CmsAdminsScaffoldConfig;
-use PeskyCMS\Db\Admins\CmsAdminsTable;
+use PeskyCMS\Db\Admins\CmfAdminsScaffoldConfig;
+use PeskyCMS\Db\Admins\CmfAdminsTable;
 
 abstract class CmsSiteLoader extends PeskyCmfSiteLoader {
 
@@ -147,12 +147,12 @@ abstract class CmsSiteLoader extends PeskyCmfSiteLoader {
     }
 
     public function registerAdminsTables() {
-        $this->app->alias(CmsAdminsTable::class, 'cms.section.admins.table');
+        $this->app->alias(CmfAdminsTable::class, 'cms.section.admins.table');
     }
 
     public function registerAdminsScaffolds() {
         $this->app->singleton('cms.section.admins.scaffold', function () {
-            return new CmsAdminsScaffoldConfig($this->app->make('cms.section.admins.table'), 'admins');
+            return new CmfAdminsScaffoldConfig($this->app->make('cms.section.admins.table'), 'admins');
         });
     }
 

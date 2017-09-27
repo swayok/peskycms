@@ -2,5 +2,9 @@
 
 return [
 
-    'app_settings_class' => \PeskyCMS\CmsAppSettings::class
+    'app_settings_class' => \PeskyCMS\CmsAppSettings::class,
+
+    'register_db_classes' => [
+
+    ],
 ];

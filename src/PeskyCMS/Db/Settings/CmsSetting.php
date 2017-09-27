@@ -2,7 +2,7 @@
 
 namespace PeskyCMS\Db\Settings;
 
-use PeskyCMS\Db\Admins\CmsAdmin;
+use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMS\Db\CmsDbRecord;
 use PeskyORMLaravel\Db\KeyValueTableUtils\KeyValueRecordHelpers;
 
@@ -10,7 +10,7 @@ use PeskyORMLaravel\Db\KeyValueTableUtils\KeyValueRecordHelpers;
  * @property-read int         $id
  * @property-read string      $key
  * @property-read string      $value
- * @property-read CmsAdmin    $Admin
+ * @property-read CmfAdmin    $Admin
  *
  * @method $this    setId($value, $isFromDb = false)
  * @method $this    setKey($value, $isFromDb = false)

@@ -2,7 +2,7 @@
 
 namespace PeskyCMS\Db\Settings;
 
-use PeskyCMS\Db\CmsDbTableStructure;
+use PeskyCMF\Db\CmfDbTableStructure;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\DefaultColumnClosures;
 use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;
@@ -12,7 +12,7 @@ use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;
  * @property-read Column    $key
  * @property-read Column    $value
  */
-class CmsSettingsTableStructure extends CmsDbTableStructure {
+class CmsSettingsTableStructure extends CmfDbTableStructure {
 
     use IdColumn;
 

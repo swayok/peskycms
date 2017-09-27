@@ -2,7 +2,7 @@
 
 namespace PeskyCMF\CMS\Redirects;
 
-use PeskyCMS\Db\Admins\CmsAdmin;
+use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMS\Db\CmsDbRecord;
 use PeskyCMS\Db\Pages\CmsPage;
 use PeskyCMS\Db\Pages\CmsPagesTable;
@@ -21,7 +21,7 @@ use PeskyCMS\Db\Pages\CmsPagesTable;
  * @property-read string      $updated_at_as_date
  * @property-read string      $updated_at_as_time
  * @property-read int         $updated_at_as_unix_ts
- * @property-read CmsAdmin    $Admin
+ * @property-read CmfAdmin    $Admin
  * @property-read CmsPage     $Page
  *
  * @method $this    setId($value, $isFromDb = false)

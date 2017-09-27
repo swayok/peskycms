@@ -4,12 +4,12 @@ namespace PeskyCMS\Console\Commands;
 
 use Illuminate\Console\Command;
 use PeskyCMF\Config\CmfConfig;
-use PeskyCMS\Db\Admins\CmsAdmin;
+use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyORM\ORM\RecordInterface;
 
 class CmsAddAdmin extends Command {
 
-    protected $description = 'Create administrator in DB using Record class provided by CmfConfig::getDefault()->user_object_class()';
+    protected $description = 'Create administrator in DB using Record class provided by CmfConfig::getDefault()->user_record_class()';
     protected $signature = 'cms:add-admin {email_or_login} {role=admin}';
 
     public function fire() {
@@ -17,9 +17,9 @@ class CmsAddAdmin extends Command {
         $emailOrLogin = strtolower(trim($args['email_or_login']));
         // create Record (empty)
         /** @var RecordInterface $adminObjectClass */
-        $adminObjectClass = CmfConfig::getDefault()->user_object_class();
+        $adminObjectClass = CmfConfig::getDefault()->user_record_class();
         $authColumn = CmfConfig::getDefault()->user_login_column();
-        /** @var CmsAdmin $admin */
+        /** @var CmfAdmin $admin */
         $admin = $adminObjectClass::newEmptyRecord();
         // request password entry
         $password = $this->secret('Enter password for admin');

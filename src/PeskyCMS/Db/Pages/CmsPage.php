@@ -2,7 +2,7 @@
 
 namespace PeskyCMS\Db\Pages;
 
-use PeskyCMS\Db\Admins\CmsAdmin;
+use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMS\Db\CmsDbRecord;
 use PeskyCMS\Db\Texts\CmsText;
 use PeskyCMS\Db\Texts\CmsTextWrapper;
@@ -38,7 +38,7 @@ use PeskyORM\ORM\RecordsSet;
  * @property-read int         $updated_at_as_unix_ts
  * @property-read string      $custom_info
  * @property-read CmsPage     $Parent
- * @property-read CmsAdmin    $Admin
+ * @property-read CmfAdmin    $Admin
  * @property-read CmsText[]|RecordsSet   $Texts
  *
  * @method $this    setId($value, $isFromDb = false)

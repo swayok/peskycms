@@ -2,9 +2,9 @@
 
 namespace PeskyCMF\CMS\Redirects;
 
-use PeskyCMS\Db\CmsDbTableStructure;
+use PeskyCMF\Db\CmfDbTableStructure;
+use PeskyCMF\Db\TableStructureTraits\AdminIdColumn;
 use PeskyCMS\Db\Pages\CmsPagesTable;
-use PeskyCMS\Db\TableStructureTraits\AdminIdColumn;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\Relation;
 use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;
@@ -21,7 +21,7 @@ use PeskyORMLaravel\Db\TableStructureTraits\TimestampColumns;
  * @property-read Relation  $Page
  * @property-read Relation  $Admin
  */
-class CmsRedirectsTableStructure extends CmsDbTableStructure {
+class CmsRedirectsTableStructure extends CmfDbTableStructure {
 
     use IdColumn,
         AdminIdColumn,

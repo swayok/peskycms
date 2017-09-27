@@ -4,7 +4,7 @@ namespace PeskyCMF\CMS\Redirects;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use PeskyCMS\Db\Admins\CmsAdminsTableStructure;
+use PeskyCMF\Db\Admins\CmfAdminsTableStructure;
 use PeskyCMS\Db\Pages\CmsPagesTableStructure;
 
 class CmsRedirectsMigration extends Migration {
@@ -33,7 +33,7 @@ class CmsRedirectsMigration extends Migration {
                     ->onUpdate('cascade');
                 $table->foreign('admin_id')
                     ->references('id')
-                    ->on(CmsAdminsTableStructure::getTableName())
+                    ->on(CmfAdminsTableStructure::getTableName())
                     ->onDelete('set null')
                     ->onUpdate('cascade');
             });

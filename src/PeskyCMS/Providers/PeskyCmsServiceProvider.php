@@ -10,13 +10,16 @@ use PeskyCMS\Console\Commands\CmsInstall;
 
 class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
 
-    protected $appSettingsClass;
-
     public function register() {
-        $this->mergeConfigFrom($this->getCmsConfigFilePath(), 'peskycms');
-        $this->appSettingsClass = config('peskycms.app_settings_class') ?: CmsAppSettings::class;
-
         parent::register();
+
+        $this->mergeConfigFrom($this->getCmsConfigFilePath(), 'peskycms');
+
+        $this->app->singleton(CmsAppSettings::class, function () {
+            return $this->getAppSettings();
+        });
+
+
 
         //todo: move this to cms configs file
 
@@ -28,6 +31,28 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
 
 
         // note: scaffolds declared in CmsSiteLoader
+    }
+
+    protected function getAppSettings() {
+        static $appSettings;
+        if ($appSettings === null) {
+            /** @var CmsAppSettings $appSettingsClass */
+            $appSettingsClass = config('peskycms.app_settings_class') ?: CmsAppSettings::class;
+            $appSettings = $appSettingsClass::getInstance();
+        }
+        return $appSettings;
+    }
+
+    public function boot() {
+        parent::boot();
+        require_once __DIR__ . '/../Config/helpers.php';
+        CmsFrontendUtils::registerBladeDirectiveForStringTemplateRendering();
+    }
+
+    public function provides() {
+        return array_merge(parent::provides(), [
+            CmsAppSettings::class
+        ]);
     }
 
     protected function configurePublishes() {
@@ -43,18 +68,8 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
         $this->registerCmsAddAdminCommand();
     }
 
-    public function boot() {
-        parent::boot();
-        require_once __DIR__ . '/../Config/helpers.php';
-        CmsFrontendUtils::registerBladeDirectiveForStringTemplateRendering();
-    }
-
     protected function getCmsConfigFilePath() {
         return __DIR__ . '/../Config/peskycms.config.php';
-    }
-
-    protected function getOrmConfigFilePath() {
-        return __DIR__ . '/../Config/peskyorm.config.php';
     }
 
     protected function registerCmsInstallCommand() {
@@ -80,22 +95,22 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
     }
 
     public function registerAdminsDbRecordClassName() {
-        $this->app->singleton(CmsAdmin::class, function () {
+        $this->app->singleton(CmfAdmin::class, function () {
             // note: do not create record here or you will possibly encounter infinite loop because this class may be
             // used in TableStructure via app(NameTableStructure) (for example to get default value, etc)
-            return CmsAdmin::class;
+            return CmfAdmin::class;
         });
     }
 
     public function registerAdminsDbTable() {
-        $this->app->singleton(CmsAdminsTable::class, function () {
-            return CmsAdminsTable::getInstance();
+        $this->app->singleton(CmfAdminsTable::class, function () {
+            return CmfAdminsTable::getInstance();
         });
     }
 
     public function registerAdminsDbTableStructure() {
-        $this->app->singleton(CmsAdminsTableStructure::class, function () {
-            return CmsAdminsTableStructure::getInstance();
+        $this->app->singleton(CmfAdminsTableStructure::class, function () {
+            return CmfAdminsTableStructure::getInstance();
         });
     }
 
