@@ -51,7 +51,7 @@ class CmsPagesTable extends CmsDbTable {
                 );
             }
             return $scaffoldConfig->translate('form.validation', 'unique_page_url', [
-                'url' => routeToCmfItemEditForm($scaffoldConfig->getTableNameForRoutes(), $otherPageId)
+                'url' => routeToCmfItemEditForm($scaffoldConfig::getResourceName(), $otherPageId)
             ]);
         });
     }

@@ -285,7 +285,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 );
             }
             return $this->translate('form.validation', 'unique_page_url', [
-                'url' => routeToCmfItemEditForm($this->getTableNameForRoutes(), $otherPageId)
+                'url' => routeToCmfItemEditForm(static::getResourceName(), $otherPageId)
             ]);
         });
     }

@@ -2,11 +2,15 @@
 
 namespace PeskyCMS\Providers;
 
+use PeskyCMF\PeskyCmfAppSettings;
 use PeskyCMF\Providers\PeskyCmfServiceProvider;
-use PeskyCMS\CmsAppSettings;
+use PeskyCMF\Scaffold\ScaffoldConfig;
 use PeskyCMS\CmsFrontendUtils;
 use PeskyCMS\Console\Commands\CmsAddAdmin;
 use PeskyCMS\Console\Commands\CmsInstall;
+use PeskyORM\ORM\RecordInterface;
+use PeskyORM\ORM\TableInterface;
+use PeskyORM\ORM\TableStructureInterface;
 
 class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
 
@@ -14,33 +18,6 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
         parent::register();
 
         $this->mergeConfigFrom($this->getCmsConfigFilePath(), 'peskycms');
-
-        $this->app->singleton(CmsAppSettings::class, function () {
-            return $this->getAppSettings();
-        });
-
-
-
-        //todo: move this to cms configs file
-
-//        $this->registerAdminsDbClasses();
-//        $this->registerSettingsDbClasses();
-//        $this->registerPagesDbClasses();
-//        $this->registerTextsDbClasses();
-//        $this->registerRedirectsDbClasses();
-
-
-        // note: scaffolds declared in CmsSiteLoader
-    }
-
-    protected function getAppSettings() {
-        static $appSettings;
-        if ($appSettings === null) {
-            /** @var CmsAppSettings $appSettingsClass */
-            $appSettingsClass = config('peskycms.app_settings_class') ?: CmsAppSettings::class;
-            $appSettings = $appSettingsClass::getInstance();
-        }
-        return $appSettings;
     }
 
     public function boot() {
@@ -51,7 +28,7 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
 
     public function provides() {
         return array_merge(parent::provides(), [
-            CmsAppSettings::class
+            PeskyCmfAppSettings::class
         ]);
     }
 
@@ -84,6 +61,33 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
             return new CmsAddAdmin();
         });
         $this->commands('command.cms.add-admin');
+    }
+
+    protected function getScaffoldConfigs() {
+        $scaffolds = parent::getScaffoldConfigs();
+        /** @var ScaffoldConfig[] $resources */
+        $resources = (array)config('peskycms.resources', []);
+        foreach ($resources as $scaffoldConfig) {
+            if (!array_key_exists($scaffoldConfig::getResourceName(), $scaffolds)) {
+                $scaffolds[$scaffoldConfig::getResourceName()] = $scaffoldConfig;
+            }
+        }
+        return $scaffolds;
+    }
+
+    protected function registerDbClasses() {
+        parent::registerDbClasses();
+        $dbClasses = (array)config('peskycms.register_db_classes', []);
+        foreach ($dbClasses as $singleton => $class) {
+            if (is_int($singleton)) {
+                $singleton = $class;
+            }
+            if (method_exists($class, 'getInstance')) {
+                $this->registerClassInstanceSingleton($singleton, $class);
+            } else {
+                $this->registerClassNameSingleton($singleton, $class);
+            }
+        }
     }
 
     // admins
@@ -124,27 +128,27 @@ class PeskyCmsServiceProvider extends PeskyCmfServiceProvider {
     }
 
     public function registerSettingsDbRecordClassName() {
-        $this->app->singleton(CmsSetting::class, function () {
+        $this->app->singleton(CmfSetting::class, function () {
             // note: do not create record here or you will possibly encounter infinite loop because this class may be
             // used in TableStructure via app(NameTableStructure) (for example to get default value, etc)
-            return CmsSetting::class;
+            return CmfSetting::class;
         });
     }
 
     public function registerSettingsDbTable() {
-        $this->app->singleton(CmsSettingsTable::class, function () {
-            return CmsSettingsTable::getInstance();
+        $this->app->singleton(CmfSettingsTable::class, function () {
+            return CmfSettingsTable::getInstance();
         });
     }
 
     public function registerSettingsDbTableStructure() {
-        $this->app->singleton(CmsSettingsTableStructure::class, function () {
-            return CmsSettingsTableStructure::getInstance();
+        $this->app->singleton(CmfSettingsTableStructure::class, function () {
+            return CmfSettingsTableStructure::getInstance();
         });
     }
 
     public function registerAppSettingsClass() {
-        $this->app->singleton(CmsAppSettings::class, function () {
+        $this->app->singleton(PeskyCmfAppSettings::class, function () {
             return $this->appSettingsClass;
         });
     }

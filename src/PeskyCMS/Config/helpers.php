@@ -1,6 +1,5 @@
 <?php
 
-use PeskyCMS\CmsAppSettings;
 use PeskyCMS\CmsFrontendUtils;
 
 if (!function_exists('insertPageData')) {
@@ -30,13 +29,13 @@ if (!function_exists('insertLinkToPage')) {
 if (!function_exists('setting')) {
 
     /**
-     * Get value for CmsSetting called $name (CmsSetting->key === $name)
+     * Get value for CmfSetting called $name (CmfSetting->key === $name)
      * @param string $name - setting name
      * @param mixed $default - default value
-     * @return mixed|CmsAppSettings|\App\AppSettings
+     * @return mixed|\PeskyCMF\PeskyCmfAppSettings|\App\AppSettings
      */
     function setting($name = null, $default = null) {
-        $class = app(CmsAppSettings::class);
+        $class = app(\PeskyCMF\PeskyCmfAppSettings::class);
         if ($name === null) {
             return $class::getInstance();
         } else {

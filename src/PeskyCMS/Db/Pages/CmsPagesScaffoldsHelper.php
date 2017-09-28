@@ -3,10 +3,10 @@
 namespace PeskyCMS\Db\Pages;
 
 use PeskyCMF\Config\CmfConfig;
+use PeskyCMF\PeskyCmfAppSettings;
 use PeskyCMF\Scaffold\Form\FormInput;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ScaffoldConfig;
-use PeskyCMS\CmsAppSettings;
 
 abstract class CmsPagesScaffoldsHelper {
 
@@ -20,7 +20,7 @@ abstract class CmsPagesScaffoldsHelper {
                     'page_id' => [
                         'label' => $scaffold->translate('form.input.content_inserts', 'page_id_arg_label'),
                         'type' => 'select',
-                        'options' => routeToCmfTableCustomData($scaffold->getTableNameForRoutes(), 'pages_for_inserts', true),
+                        'options' => routeToCmfTableCustomData($scaffold::getResourceName(), 'pages_for_inserts', true),
                     ],
                     'page_field' => [
                         'label' => $scaffold->translate('form.input.content_inserts', 'page_field_arg_label'),
@@ -42,7 +42,7 @@ abstract class CmsPagesScaffoldsHelper {
                     'page_id' => [
                         'label' => $scaffold->translate('form.input.content_inserts', 'page_id_arg_label'),
                         'type' => 'select',
-                        'options' => routeToCmfTableCustomData($scaffold->getTableNameForRoutes(), 'pages_for_inserts', true),
+                        'options' => routeToCmfTableCustomData($scaffold::getResourceName(), 'pages_for_inserts', true),
                     ],
                     'title' => [
                         'label' => $scaffold->translate('form.input.content_inserts', 'page_link_title_arg_label'),
@@ -59,14 +59,14 @@ abstract class CmsPagesScaffoldsHelper {
                     'page_id' => [
                         'label' => $scaffold->translate('form.input.content_inserts', 'text_block_id_arg_label'),
                         'type' => 'select',
-                        'options' => routeToCmfTableCustomData($scaffold->getTableNameForRoutes(), 'text_blocks_for_inserts', true),
+                        'options' => routeToCmfTableCustomData($scaffold::getResourceName(), 'text_blocks_for_inserts', true),
                     ]
                 ],
                 $scaffold->translate('form.input.content_inserts', 'text_block_insert_widget_title_template')
             ),
         ];
-        /** @var CmsAppSettings $appSettings */
-        $appSettings = app(CmsAppSettings::class);
+        /** @var PeskyCmfAppSettings $appSettings */
+        $appSettings = app(PeskyCmfAppSettings::class);
         foreach ($appSettings::getSettingsForWysiwygDataIsnserts() as $settingName) {
             $ret[] = WysiwygFormInput::createDataInsertConfig(
                 "setting('$settingName')",

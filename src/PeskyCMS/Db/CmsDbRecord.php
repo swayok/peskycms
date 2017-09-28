@@ -4,7 +4,7 @@ namespace PeskyCMS\Db;
 
 use PeskyCMF\Db\CmfDbRecord;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMS\Db\Settings\CmsSettingsTable;
+use PeskyCMS\Db\Settings\CmfSettingsTable;
 use PeskyORMLaravel\Db\KeyValueTableUtils\KeyValueTableInterface;
 
 /**
@@ -23,7 +23,7 @@ abstract class CmsDbRecord extends CmfDbRecord {
     }
 
     /**
-     * @return CmsSettingsTable|KeyValueTableInterface
+     * @return CmfSettingsTable|KeyValueTableInterface
      */
     static public function getTable() {
         if (empty(static::$tableClass)) {
