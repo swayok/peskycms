@@ -2,13 +2,13 @@
 
 namespace PeskyCMS\Console\Commands;
 
-use PeskyCMF\CMS\Redirects\CmsRedirectsScaffoldConfig;
 use PeskyCMF\Console\Commands\CmfCommand;
-use PeskyCMS\Db\Pages\CmsMenusScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsNewsScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsPagesScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsTextElementsScaffoldConfig;
 use PeskyCMS\Providers\PeskyCmsServiceProvider;
+use PeskyCMS\Scaffolds\CmsMenusScaffoldConfig;
+use PeskyCMS\Scaffolds\CmsNewsScaffoldConfig;
+use PeskyCMS\Scaffolds\CmsPagesScaffoldConfig;
+use PeskyCMS\Scaffolds\CmsRedirectsScaffoldConfig;
+use PeskyCMS\Scaffolds\CmsTextElementsScaffoldConfig;
 
 class CmsInstallCommand extends CmfCommand {
 
