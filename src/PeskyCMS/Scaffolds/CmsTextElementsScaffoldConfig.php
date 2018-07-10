@@ -1,6 +1,6 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Scaffolds;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Scaffold\DataGrid\DataGridColumn;
@@ -9,14 +9,25 @@ use PeskyCMF\Scaffold\Form\InputRenderer;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ItemDetails\ValueCell;
 use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
+use PeskyCMS\Db\Pages\CmsPage;
+use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Scaffolds\Utils\CmsPagesScaffoldsHelper;
 use Swayok\Utils\Set;
 
-class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
+class CmsTextElementsScaffoldConfig extends NormalTableScaffoldConfig {
 
     protected $isDetailsViewerAllowed = true;
     protected $isCreateAllowed = true;
     protected $isEditAllowed = true;
     protected $isDeleteAllowed = true;
+
+    public static function getTable() {
+        return CmsPagesTable::getInstance();
+    }
+
+    static protected function getIconForMenuItem() {
+        return 'fa fa-files-o';
+    }
     
     protected function createDataGridConfig() {
         return parent::createDataGridConfig()
@@ -24,7 +35,7 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                 /** @var CmsPage $pageClass */
                 $pageClass = app(CmsPage::class);
                 return [
-                    'type' => $pageClass::TYPE_MENU,
+                    'type' => $pageClass::TYPE_TEXT_ELEMENT,
                 ];
             })
             ->setColumns([
@@ -66,6 +77,13 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                 }
                 return $record;
             });
+        /** @var CmsPagesTable $pagesTable */
+//        $pagesTable = app(CmsPagesTable::class);
+//        if ($pagesTable->getTableStructure()->images->hasImagesConfigurations()) {
+//            $itemDetailsConfig->addTab($this->translate('item_details.tab', 'images'), [
+//                'images',
+//            ]);
+//        }
         foreach (setting()->languages() as $langId => $langLabel) {
             $itemDetailsConfig->addTab($this->translate('item_details.tab', 'texts', ['language' => $langLabel]), [
                 "Texts.$langId.id" => ValueCell::create()->setNameForTranslation('Texts.id'),
@@ -74,11 +92,11 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                     ->setValueConverter(function () use ($langLabel) {
                         return $langLabel;
                     }),
-                "Texts.$langId.menu_title" => ValueCell::create()->setNameForTranslation('Texts.menu_title'),
 //                "Texts.$langId.comment" => ValueCell::create()->setNameForTranslation('Texts.comment'),
                 "Texts.$langId.content" => ValueCell::create()
                     ->setType(ValueCell::TYPE_HTML)
                     ->setNameForTranslation('Texts.content'),
+
             ]);
         }
         return $itemDetailsConfig;
@@ -102,7 +120,8 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                 'comment',
                 'type' => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN),
-                'is_published' => FormInput::create(),
+                'is_published' => FormInput::create()
+                    ->setType(FormInput::TYPE_HIDDEN),
                 'admin_id' => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN)
             ])
@@ -129,8 +148,9 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                 return $record;
             })
             ->setIncomingDataModifier(function (array $data) use ($pageClass) {
-                $data['admin_id'] = \Auth::guard()->user()->getAuthIdentifier();
-                $data['type'] = $pageClass::TYPE_MENU;
+                $data['admin_id'] = static::getUser()->id;
+                $data['type'] = $pageClass::TYPE_TEXT_ELEMENT;
+                $data['is_published'] = true;
                 if (!empty($data['Texts']) && is_array($data['Texts'])) {
                     foreach ($data['Texts'] as $i => &$textData) {
                         if (empty($textData['id'])) {
@@ -150,7 +170,6 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
         foreach (setting()->languages() as $langId => $langLabel) {
             $formConfig->addTab($this->translate('form.tab', 'texts', ['language' => $langLabel]), [
                 "Texts.$langId.id" => FormInput::create()->setType(FormInput::TYPE_HIDDEN),
-                "Texts.$langId.menu_title" => FormInput::create()->setNameForTranslation('Texts.menu_title'),
                 "Texts.$langId.comment" => FormInput::create()->setNameForTranslation('Texts.comment'),
                 "Texts.$langId.content" => WysiwygFormInput::create()
                     ->setRelativeImageUploadsFolder('/assets/wysiwyg/pages')

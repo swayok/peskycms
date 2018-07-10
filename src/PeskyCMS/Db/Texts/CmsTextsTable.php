@@ -2,21 +2,19 @@
 
 namespace PeskyCMS\Db\Texts;
 
-use PeskyCMS\Db\CmsDbTable;
+use PeskyCMF\Db\CmfDbTable;
 
-/**
- * @method CmsTextsTableStructure getTableStructure()
- * @method CmsText newRecord()
- */
-class CmsTextsTable extends CmsDbTable {
+class CmsTextsTable extends CmfDbTable {
 
-    static protected $tableStructureClass = CmsTextsTableStructure::class;
-    static protected $recordClass = CmsText::class;
+    public function getTableStructure(): CmsTextsTableStructure {
+        return CmsTextsTableStructure::getInstance();
+    }
 
-    /**
-     * @return string
-     */
-    public function getTableAlias() {
+    public function newRecord(): CmsText {
+        return new CmsText();
+    }
+
+    public function getTableAlias(): string {
         return 'CmsTexts';
     }
 

@@ -2,8 +2,8 @@
 
 namespace PeskyCMS\Db\Texts;
 
+use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMF\Db\TableStructureTraits\AdminIdColumn;
 use PeskyCMS\Db\Pages\CmsPagesTable;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\Relation;
@@ -29,14 +29,10 @@ use PeskyORMLaravel\Db\TableStructureTraits\TimestampColumns;
 class CmsTextsTableStructure extends CmfDbTableStructure {
 
     use IdColumn,
-        AdminIdColumn,
         TimestampColumns;
 
-    /**
-     * @return string
-     */
-    static public function getTableName() {
-        return 'texts';
+    static public function getTableName(): string {
+        return 'cms_texts';
     }
 
     private function page_id() {
@@ -99,8 +95,15 @@ class CmsTextsTableStructure extends CmfDbTableStructure {
     }
 
     private function Page() {
-        return Relation::create('page_id', Relation::BELONGS_TO, app(CmsPagesTable::class), 'id')
+        return Relation::create('page_id', Relation::BELONGS_TO, CmsPagesTable::class, 'id')
             ->setDisplayColumnName('url_alias');
+    }
+
+    private function Admin() {
+        return Relation::create('admin_id', Relation::BELONGS_TO, CmfConfig::getDefault()->getAuthModule()->getUsersTable(), 'id')
+            ->setDisplayColumnName(function (array $data) {
+                return array_get($data, 'name') ?: (array_get($data, 'email') ?: (array_get($data, 'login') ?: array_get($data, 'id')));
+            });
     }
 
 }

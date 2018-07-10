@@ -1,12 +1,14 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Scaffolds\Utils;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\PeskyCmfAppSettings;
 use PeskyCMF\Scaffold\Form\FormInput;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ScaffoldConfig;
+use PeskyCMS\Db\Pages\CmsPage;
+use PeskyCMS\Db\Pages\CmsPagesTable;
 
 abstract class CmsPagesScaffoldsHelper {
 

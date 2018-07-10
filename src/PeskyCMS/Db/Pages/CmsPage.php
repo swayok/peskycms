@@ -3,7 +3,7 @@
 namespace PeskyCMS\Db\Pages;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
-use PeskyCMS\Db\CmsDbRecord;
+use PeskyCMF\Db\CmfDbRecord;
 use PeskyCMS\Db\Texts\CmsText;
 use PeskyCMS\Db\Texts\CmsTextWrapper;
 use PeskyORM\ORM\RecordsSet;
@@ -57,10 +57,8 @@ use PeskyORM\ORM\RecordsSet;
  * @method $this    setIsPublished($value, $isFromDb = false)
  * @method $this    setPublishAt($value, $isFromDb = false)
  * @method $this    setCustomInfo($value, $isFromDb = false)
- *
- * @method static CmsPagesTable getTable()
  */
-class CmsPage extends CmsDbRecord {
+class CmsPage extends CmfDbRecord {
 
     static protected $tableClass = CmsPagesTable::class;
 

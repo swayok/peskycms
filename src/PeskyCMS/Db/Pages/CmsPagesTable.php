@@ -2,23 +2,21 @@
 
 namespace PeskyCMS\Db\Pages;
 
+use PeskyCMF\Db\CmfDbTable;
 use PeskyCMF\Scaffold\ScaffoldConfig;
-use PeskyCMS\Db\CmsDbTable;
 use PeskyORM\Core\DbExpr;
 
-/**
- * @method CmsPagesTableStructure getTableStructure()
- * @method CmsPage newRecord()
- */
-class CmsPagesTable extends CmsDbTable {
+class CmsPagesTable extends CmfDbTable {
 
-    static protected $tableStructureClass = CmsPagesTableStructure::class;
-    static protected $recordClass = CmsPage::class;
+    public function getTableStructure(): CmsPagesTableStructure {
+        return CmsPagesTableStructure::getInstance();
+    }
 
-    /**
-     * @return string
-     */
-    public function getTableAlias() {
+    public function newRecord(): CmsPage {
+        return new CmsPage();
+    }
+
+    public function getTableAlias(): string {
         return 'CmsPages';
     }
 

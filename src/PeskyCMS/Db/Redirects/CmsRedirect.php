@@ -3,7 +3,7 @@
 namespace PeskyCMF\CMS\Redirects;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
-use PeskyCMS\Db\CmsDbRecord;
+use PeskyCMF\Db\CmfDbRecord;
 use PeskyCMS\Db\Pages\CmsPage;
 use PeskyCMS\Db\Pages\CmsPagesTable;
 
@@ -31,17 +31,17 @@ use PeskyCMS\Db\Pages\CmsPagesTable;
  * @method $this    setIsPermanent($value, $isFromDb = false)
  * @method $this    setCreatedAt($value, $isFromDb = false)
  * @method $this    setUpdatedAt($value, $isFromDb = false)
- *
- * @method static CmsRedirectsTable getTable()
  */
-class CmsRedirect extends CmsDbRecord {
+class CmsRedirect extends CmfDbRecord {
 
-    static protected $tableClass = CmsRedirectsTable::class;
+    static public function getTable(): CmsPagesTable {
+        return CmsPagesTable::getInstance();
+    }
 
-    protected function afterSave($isCreated) {
-        parent::afterSave($isCreated);
+    protected function afterSave($isCreated, array $updatedColumns = []) {
+        parent::afterSave($isCreated, $updatedColumns);
         /** @var CmsPagesTable $pagesTable */
-        $pagesTable = static::getSingletonInstanceOfDbClassFromServiceContainer(CmsPagesTable::class);
+        $pagesTable = static::getTable();
         $childPages = $pagesTable::select('*', ['parent_id' => $this->page_id]);
         $childPages->optimizeIteration();
         $redirect = static::newEmptyRecord();

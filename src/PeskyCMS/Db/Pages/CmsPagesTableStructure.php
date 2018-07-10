@@ -2,8 +2,8 @@
 
 namespace PeskyCMS\Db\Pages;
 
+use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMF\Db\TableStructureTraits\AdminIdColumn;
 use PeskyCMS\Db\Texts\CmsTextsTable;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\RecordValue;
@@ -36,7 +36,6 @@ use PeskyORMLaravel\Db\TableStructureTraits\TimestampColumns;
 class CmsPagesTableStructure extends CmfDbTableStructure {
 
     use IdColumn,
-        AdminIdColumn,
         IsPublishedColumn,
         TimestampColumns;
 
@@ -44,7 +43,7 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
      * @return string
      */
     static public function getTableName() {
-        return 'pages';
+        return 'cms_pages';
     }
 
     private function type() {
@@ -166,6 +165,13 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
     private function Texts() {
         return Relation::create('id', Relation::HAS_MANY, app(CmsTextsTable::class), 'page_id')
             ->setDisplayColumnName('title');
+    }
+
+    private function Admin() {
+        return Relation::create('admin_id', Relation::BELONGS_TO, CmfConfig::getDefault()->getAuthModule()->getUsersTable(), 'id')
+            ->setDisplayColumnName(function (array $data) {
+                return array_get($data, 'name') ?: (array_get($data, 'email') ?: (array_get($data, 'login') ?: array_get($data, 'id')));
+            });
     }
 
     protected function configureImages(ImagesColumn $column) {

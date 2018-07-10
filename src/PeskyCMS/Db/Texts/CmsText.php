@@ -3,7 +3,7 @@
 namespace PeskyCMS\Db\Texts;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
-use PeskyCMS\Db\CmsDbRecord;
+use PeskyCMF\Db\CmfDbRecord;
 use PeskyCMS\Db\Pages\CmsPage;
 
 /**
@@ -42,11 +42,11 @@ use PeskyCMS\Db\Pages\CmsPage;
  * @method $this    setMetaDescription($value, $isFromDb = false)
  * @method $this    setMetaKeywords($value, $isFromDb = false)
  * @method $this    setCustomInfo($value, $isFromDb = false)
- *
- * @method static CmsTextsTable getTable()
  */
-class CmsText extends CmsDbRecord {
+class CmsText extends CmfDbRecord {
 
-    static protected $tableClass = CmsTextsTable::class;
+    public static function getTable(): CmsTextsTable {
+        return CmsTextsTable::getInstance();
+    }
 
 }

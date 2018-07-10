@@ -2,21 +2,19 @@
 
 namespace PeskyCMF\CMS\Redirects;
 
-use PeskyCMS\Db\CmsDbTable;
+use PeskyCMF\Db\CmfDbTable;
 
-/**
- * @method CmsRedirectsTableStructure getTableStructure()
- * @method CmsRedirect newRecord()
- */
-class CmsRedirectsTable extends CmsDbTable {
+class CmsRedirectsTable extends CmfDbTable {
 
-    static protected $tableStructureClass = CmsRedirectsTableStructure::class;
-    static protected $recordClass = CmsRedirect::class;
+    public function getTableStructure(): CmsRedirectsTableStructure {
+        return CmsRedirectsTableStructure::getInstance();
+    }
 
-    /**
-     * @return string
-     */
-    public function getTableAlias() {
+    public function newRecord(): CmsRedirect {
+        return new CmsRedirect();
+    }
+
+    public function getTableAlias(): string {
         return 'CmsRedirects';
     }
 

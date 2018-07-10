@@ -1,7 +1,8 @@
 <?php
 
-namespace PeskyCMF\CMS\Redirects;
+namespace PeskyCMS\Scaffolds;
 
+use PeskyCMF\CMS\Redirects\CmsRedirectsTable;
 use PeskyCMF\Scaffold\DataGrid\DataGridColumn;
 use PeskyCMF\Scaffold\Form\FormInput;
 use PeskyCMF\Scaffold\ItemDetails\ValueCell;
@@ -15,7 +16,15 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
     protected $isCreateAllowed = true;
     protected $isEditAllowed = true;
     protected $isDeleteAllowed = true;
-    
+
+    public static function getTable() {
+        return CmsRedirectsTable::class;
+    }
+
+    static protected function getIconForMenuItem() {
+        return 'fa fa-map-signs';
+    }
+
     protected function createDataGridConfig() {
         return parent::createDataGridConfig()
             ->readRelations([
@@ -79,7 +88,7 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
                 'admin_id' => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN)
                     ->setSubmittedValueModifier(function () {
-                        return \Auth::guard()->user()->getAuthIdentifier();
+                        return static::getUser()->id;
                     }),
             ]);
     }
@@ -114,4 +123,5 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
         }
         return $options;
     }
+
 }
