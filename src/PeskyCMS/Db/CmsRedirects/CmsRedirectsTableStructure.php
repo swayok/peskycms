@@ -1,10 +1,10 @@
 <?php
 
-namespace PeskyCMF\CMS\Redirects;
+namespace PeskyCMS\Db\CmsRedirects;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\Relation;
 use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;

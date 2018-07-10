@@ -1,6 +1,6 @@
 <?php
 
-namespace PeskyCMF\CMS\Redirects;
+namespace PeskyCMS\Db\CmsRedirects;
 
 use PeskyCMF\Db\CmfDbTable;
 

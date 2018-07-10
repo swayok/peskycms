@@ -1,9 +1,9 @@
 <?php
 
-namespace PeskyCMS\Db\Texts;
+namespace PeskyCMS\Db\CmsTexts;
 
 use PeskyCMS\CmsFrontendUtils;
-use PeskyCMS\Db\Pages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPage;
 use PeskyORM\ORM\RecordInterface;
 
 class CmsTextWrapper {
@@ -82,9 +82,7 @@ class CmsTextWrapper {
      */
     protected function getMainTextRecord() {
         if ($this->mainTextRecord === null) {
-            /** @var CmsText $textRecordClass */
-            $textRecordClass = app(CmsText::class);
-            $this->mainTextRecord = $textRecordClass::find([
+            $this->mainTextRecord = CmsText::find([
                 'page_id' => $this->getPage()->id,
                 'language' => $this->mainLanguage
             ]);
@@ -110,12 +108,10 @@ class CmsTextWrapper {
      */
     protected function getFallbackTextRecord() {
         if ($this->fallbackTextRecord === null) {
-            /** @var CmsText $textRecordClass */
-            $textRecordClass = app(CmsText::class);
             if (empty($this->fallbackLanguage)) {
-                $this->fallbackTextRecord = $textRecordClass::newEmptyRecord();
+                $this->fallbackTextRecord = CmsText::newEmptyRecord();
             } else {
-                $this->fallbackTextRecord = $textRecordClass::find([
+                $this->fallbackTextRecord = CmsText::find([
                     'page_id' => $this->getPage()->id,
                     'language' => $this->fallbackLanguage
                 ]);

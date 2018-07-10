@@ -1,11 +1,11 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMF\Db\CmfDbRecord;
-use PeskyCMS\Db\Texts\CmsText;
-use PeskyCMS\Db\Texts\CmsTextWrapper;
+use PeskyCMS\Db\CmsTexts\CmsText;
+use PeskyCMS\Db\CmsTexts\CmsTextWrapper;
 use PeskyORM\ORM\RecordsSet;
 
 /**

@@ -3,11 +3,11 @@
 namespace PeskyCMS;
 
 use Illuminate\Routing\Route;
-use PeskyCMF\CMS\Redirects\CmsRedirect;
 use PeskyCMF\HttpCode;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
-use PeskyCMS\Db\Pages\CmsPageWrapper;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPageWrapper;
+use PeskyCMS\Db\CmsRedirects\CmsRedirect;
 use PeskyORM\ORM\RecordInterface;
 use Swayok\Html\EmptyTag;
 use Swayok\Html\Tag;
@@ -81,8 +81,7 @@ abstract class CmsFrontendUtils {
         $url = strtolower(rtrim($url, '/'));
         // search for url in redirects
         /** @var CmsRedirect $redirectClass */
-        $redirectClass = app(CmsRedirect::class);
-        $redirect = $redirectClass::find([
+        $redirect = CmsRedirect::find([
             'relative_url ~*' => '^' . preg_quote($url, null) . '/*$'
         ]);
         if ($redirect->existsInDb()) {
@@ -288,8 +287,7 @@ abstract class CmsFrontendUtils {
     static public function getPageWrapper($pageIdOrPageCode) {
         return static::getPageFromCache($pageIdOrPageCode, function ($pageIdOrPageCode) {
             /** @var CmsPage $pageClass */
-            $pageClass = app(CmsPage::class);
-            return $pageClass::find(
+            return CmsPage::find(
                 [
                     'OR' => [
                         $pageClass::getPrimaryKeyColumnName() => (int)$pageIdOrPageCode,
@@ -313,10 +311,8 @@ abstract class CmsFrontendUtils {
      */
     static protected function getPageByUrl($url) {
         return static::getPageFromCache($url, function ($url) {
-            /** @var CmsPagesTable $pagesTable */
-            $pagesTable = app(CmsPagesTable::class);
             $lastUrlSection = preg_quote(array_last(explode('/', trim($url, '/'))), null);
-            $possiblePages = $pagesTable::select(['*', 'Parent' => ['*']], [
+            $possiblePages = CmsPagesTable::select(['*', 'Parent' => ['*']], [
                 'url_alias ~*' => (empty($url) ? '^' : $lastUrlSection) . '/*$',
                 'ORDER' => ['parent_id' => 'DESC']
             ]);
@@ -324,8 +320,8 @@ abstract class CmsFrontendUtils {
             foreach ($possiblePages as $possiblePage) {
                 static::savePageToCache($possiblePage);
             }
-            return static::getPageFromCache($url, function () use ($pagesTable) {
-                return $pagesTable::getInstance()->newRecord();
+            return static::getPageFromCache($url, function () {
+                return CmsPagesTable::getInstance()->newRecord();
             });
         });
     }

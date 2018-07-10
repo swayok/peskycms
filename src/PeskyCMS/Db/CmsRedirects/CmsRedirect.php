@@ -1,11 +1,11 @@
 <?php
 
-namespace PeskyCMF\CMS\Redirects;
+namespace PeskyCMS\Db\CmsRedirects;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMF\Db\CmfDbRecord;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 
 /**
  * @property-read int         $id

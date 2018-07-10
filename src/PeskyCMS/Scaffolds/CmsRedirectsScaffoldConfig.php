@@ -2,13 +2,13 @@
 
 namespace PeskyCMS\Scaffolds;
 
-use PeskyCMF\CMS\Redirects\CmsRedirectsTable;
 use PeskyCMF\Scaffold\DataGrid\DataGridColumn;
 use PeskyCMF\Scaffold\Form\FormInput;
 use PeskyCMF\Scaffold\ItemDetails\ValueCell;
 use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
+use PeskyCMS\Db\CmsRedirects\CmsRedirectsTable;
 
 class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
 
@@ -19,6 +19,13 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
 
     public static function getTable() {
         return CmsRedirectsTable::class;
+    }
+
+    /**
+     * @return CmsPagesTable
+     */
+    public static function getPagesTable() {
+        return CmsPagesTable::getInstance();
     }
 
     public static function getResourceName() {
@@ -98,11 +105,9 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
     }
 
     protected function getPagesOptions() {
-        /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
         /** @var CmsPage $pageClass */
-        $pageClass = app(CmsPage::class);
-        $pages = $pagesTable::select(
+        $pageClass = get_class(static::getPagesTable()->newRecord());
+        $pages = static::getPagesTable()->select(
             ['id', 'url_alias', 'type', 'parent_id', 'Parent' => ['id', 'url_alias', 'parent_id']],
             [
                 'type !=' => $pageClass::getTypesWithoutUrls(),

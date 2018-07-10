@@ -1,8 +1,8 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Db\CmsPages;
 
-use PeskyCMS\Db\Texts\CmsTextWrapper;
+use PeskyCMS\Db\CmsTexts\CmsTextWrapper;
 use PeskyORM\ORM\RecordInterface;
 use Swayok\Utils\StringUtils;
 

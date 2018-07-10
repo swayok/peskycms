@@ -1,6 +1,6 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Db\CmsPages;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

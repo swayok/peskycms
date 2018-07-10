@@ -9,8 +9,8 @@ use PeskyCMF\Scaffold\Form\InputRenderer;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ItemDetails\ValueCell;
 use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Scaffolds\Utils\CmsPagesScaffoldsHelper;
 use Swayok\Utils\Set;
 
@@ -37,7 +37,7 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
         return parent::createDataGridConfig()
             ->setSpecialConditions(function () {
                 /** @var CmsPage $pageClass */
-                $pageClass = app(CmsPage::class);
+                $pageClass = get_class(static::getTable()->newRecord());
                 return [
                     'type' => $pageClass::TYPE_MENU,
                 ];
@@ -102,7 +102,7 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
     protected function createFormConfig() {
         $formConfig = parent::createFormConfig();
         /** @var CmsPage $pageClass */
-        $pageClass = app(CmsPage::class);
+        $pageClass = get_class(static::getTable()->newRecord());
         $formConfig
             ->setWidth(80)
             ->addTab($this->translate('form.tab', 'general'), [

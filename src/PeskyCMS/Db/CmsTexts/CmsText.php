@@ -1,10 +1,10 @@
 <?php
 
-namespace PeskyCMS\Db\Texts;
+namespace PeskyCMS\Db\CmsTexts;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMF\Db\CmfDbRecord;
-use PeskyCMS\Db\Pages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPage;
 
 /**
  * @property-read int         $id

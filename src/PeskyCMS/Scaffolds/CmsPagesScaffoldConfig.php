@@ -11,8 +11,8 @@ use PeskyCMF\Scaffold\Form\InputRenderer;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ItemDetails\ValueCell;
 use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Scaffolds\Utils\CmsPagesScaffoldsHelper;
 use PeskyORM\Core\DbExpr;
 use Swayok\Html\Tag;
@@ -41,7 +41,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
         return parent::createDataGridConfig()
             ->setSpecialConditions(function () {
                 /** @var CmsPage $pageClass */
-                $pageClass = app(CmsPage::class);
+                $pageClass = get_class(static::getTable()->newRecord());
                 return [
                     'type' => $pageClass::TYPE_PAGE,
                 ];
@@ -115,9 +115,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 }
                 return $record;
             });
-        /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
-        if ($pagesTable->getTableStructure()->images->hasImagesGroupsConfigurations()) {
+        if (static::getTable()->getTableStructure()->images->hasImagesGroupsConfigurations()) {
             $itemDetailsConfig->addTab($this->translate('item_details.tab', 'images'), [
                 'images',
             ]);
@@ -146,10 +144,8 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
     
     protected function createFormConfig() {
         $formConfig = parent::createFormConfig();
-        /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
         /** @var CmsPage $pageClass */
-        $pageClass = app(CmsPage::class);
+        $pageClass = get_class(static::getTable()->newRecord());
         $formConfig
             ->setWidth(80)
             ->addTab($this->translate('form.tab', 'general'), [
@@ -188,8 +184,8 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 'admin_id' => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN)
             ])
-            ->setValidators(function () use ($pagesTable) {
-                $pagesTable::registerUniquePageUrlValidator($this);
+            ->setValidators(function () {
+                static::getTable()->registerUniquePageUrlValidator($this);
                 $validators = [
                     'is_published' => 'required|bool',
                     'title' => 'string|max:500',
@@ -232,7 +228,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 return $data;
             });
 
-        if ($pagesTable->getTableStructure()->images->hasImagesGroupsConfigurations()) {
+        if (static::getTable()->getTableStructure()->images->hasImagesGroupsConfigurations()) {
             $formConfig->addTab($this->translate('form.tab', 'images'), [
                 'images' => ImagesFormInput::create(),
             ]);
@@ -270,28 +266,26 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
     }
 
     protected function addUniquePageUrlValidator() {
-        /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
-        \Validator::extend('unique_page_url', function () use ($pagesTable) {
+        \Validator::extend('unique_page_url', function () {
             $urlAlias = request()->input('url_alias');
             $parentId = (int)request()->input('parent_id');
             if ($parentId > 0 && $urlAlias === '/') {
                 return false;
             } else {
-                return $pagesTable::count([
+                return static::getTable()->count([
                     'url_alias' => $urlAlias,
                     'id !=' => (int)request()->input('id'),
                     'parent_id' => $parentId > 0 ? $parentId : null
                 ]) === 0;
             }
         });
-        \Validator::replacer('unique_page_url', function () use ($pagesTable) {
+        \Validator::replacer('unique_page_url', function () {
             $urlAlias = request()->input('url_alias');
             $parentId = (int)request()->input('parent_id');
             if ($parentId > 0 && $urlAlias === '/') {
                 $otherPageId = $parentId;
             } else {
-                $otherPageId = $pagesTable::selectValue(
+                $otherPageId = static::getTable()->selectValue(
                     DbExpr::create('`id`'),
                     [
                         'url_alias' => $urlAlias,

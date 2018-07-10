@@ -1,6 +1,6 @@
 <?php
 
-namespace PeskyCMS\Db\Texts;
+namespace PeskyCMS\Db\CmsTexts;
 
 use PeskyCMF\Db\CmfDbTable;
 

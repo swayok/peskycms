@@ -7,8 +7,8 @@ use PeskyCMF\PeskyCmfAppSettings;
 use PeskyCMF\Scaffold\Form\FormInput;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 
 abstract class CmsPagesScaffoldsHelper {
 
@@ -90,10 +90,10 @@ abstract class CmsPagesScaffoldsHelper {
      * @throws \BadMethodCallException
      */
     static public function getDataForWysiwygInserts(ScaffoldConfig $scaffold, $dataId, $currentPageId = null) {
-        /** @var CmsPage $pageClass */
-        $pageClass = app(CmsPage::class);
         /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
+        $pagesTable = $scaffold::getTable();
+        /** @var CmsPage $pageClass */
+        $pageClass = get_class($pagesTable->newRecord());
         if (empty($currentPageId)) {
             $currentPageId = 0;
         }
@@ -137,9 +137,7 @@ abstract class CmsPagesScaffoldsHelper {
      * @throws \BadMethodCallException
      */
     static public function getPagesUrlsOptions($pageType, $currentPageId = null) {
-        /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
-        $pages = $pagesTable::select(['*', 'Parent' => ['*']], [
+        $pages = CmsPagesTable::select(['*', 'Parent' => ['*']], [
             'id !=' => (int)$currentPageId,
             'type' => $pageType,
             'url_alias !=' => '/'

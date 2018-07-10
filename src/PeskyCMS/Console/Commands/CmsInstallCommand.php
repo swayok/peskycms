@@ -21,12 +21,13 @@ class CmsInstallCommand extends CmfCommand {
     }
 
     public function handle() {
-        if ($this->confirm('Have you previously installed PeskyCMF?', false)) {
+        if (!$this->confirm('Have you previously installed PeskyCMF?', false)) {
             $this->call('cmf:install');
         }
         $migrationsPath = database_path('migrations') . DIRECTORY_SEPARATOR;
-        foreach (['pages', 'texts', 'redirects'] as $index => $tableName) {
-            $this->addMigrationForTable($tableName, $index, $migrationsPath, 'Cms', 'PeskyCMS');
+        $timestamp = time();
+        foreach (['cms_pages', 'cms_texts', 'cms_redirects'] as $index => $tableName) {
+            $this->addMigrationForTable($tableName, $migrationsPath, $timestamp + $index, '', 'PeskyCMS');
         }
         $this->extender();
         $this->outro();

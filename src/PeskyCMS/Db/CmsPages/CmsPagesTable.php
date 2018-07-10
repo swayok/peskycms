@@ -1,6 +1,6 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Db\CmfDbTable;
 use PeskyCMF\Scaffold\ScaffoldConfig;

@@ -9,8 +9,8 @@ use PeskyCMF\Scaffold\Form\InputRenderer;
 use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ItemDetails\ValueCell;
 use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
-use PeskyCMS\Db\Pages\CmsPage;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPage;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Scaffolds\Utils\CmsPagesScaffoldsHelper;
 use Swayok\Utils\Set;
 
@@ -37,7 +37,7 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
         return parent::createDataGridConfig()
             ->setSpecialConditions(function () {
                 /** @var CmsPage $pageClass */
-                $pageClass = app(CmsPage::class);
+                $pageClass = get_class(static::getTable()->newRecord());
                 return [
                     'type' => $pageClass::TYPE_NEWS,
                 ];
@@ -99,9 +99,7 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
                 }
                 return $record;
             });
-        /** @var CmsPagesTable $pagesTable */
-//        $pagesTable = app(CmsPagesTable::class);
-//        if ($pagesTable->getTableStructure()->images->hasImagesConfigurations()) {
+//        if (static::getTable()->getTableStructure()->images->hasImagesConfigurations()) {
 //            $itemDetailsConfig->addTab($this->translate('item_details.tab', 'images'), [
 //                'images',
 //            ]);
@@ -130,17 +128,15 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
     
     protected function createFormConfig() {
         $formConfig = parent::createFormConfig();
-        /** @var CmsPagesTable $pagesTable */
-        $pagesTable = app(CmsPagesTable::class);
         /** @var CmsPage $pageClass */
-        $pageClass = app(CmsPage::class);
+        $pageClass = get_class(static::getTable()->newRecord());
         $formConfig
             ->setWidth(80)
             ->addTab($this->translate('form.tab', 'general'), [
                 'title',
                 'parent_id' => FormInput::create()
                     ->setType(FormInput::TYPE_SELECT)
-                    ->setOptionsLoader(function ($pkValue) use ($pagesTable, $pageClass) {
+                    ->setOptionsLoader(function ($pkValue) use ($pageClass) {
                         return CmsPagesScaffoldsHelper::getPagesUrlsOptions($pageClass::TYPE_NEWS, (int)$pkValue);
                     })
                     ->setDefaultRendererConfigurator(function (InputRenderer $renderer) {
@@ -175,8 +171,8 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
                 'admin_id' => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN),
             ])
-            ->setValidators(function () use ($pagesTable) {
-                $pagesTable::registerUniquePageUrlValidator($this);
+            ->setValidators(function () {
+                static::getTable()->registerUniquePageUrlValidator($this);
                 $validators = [
                     'is_published' => 'required|boolean',
                     'publish_at' => 'required|date',
@@ -220,7 +216,7 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
                 return $data;
             });
 
-//        if ($pagesTable->getTableStructure()->images->hasImagesConfigurations()) {
+//        if (static::getTable()->getTableStructure()->images->hasImagesConfigurations()) {
 //            $formConfig->addTab($this->translate('form.tab', 'images'), [
 //                'images' => ImagesFormInput::create(),
 //            ]);

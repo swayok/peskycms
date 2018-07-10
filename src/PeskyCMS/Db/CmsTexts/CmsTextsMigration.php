@@ -1,11 +1,11 @@
 <?php
 
-namespace PeskyCMS\Db\Texts;
+namespace PeskyCMS\Db\CmsTexts;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use PeskyCMF\Db\Admins\CmfAdminsTableStructure;
-use PeskyCMS\Db\Pages\CmsPagesTableStructure;
+use PeskyCMS\Db\CmsPages\CmsPagesTableStructure;
 
 class CmsTextsMigration extends Migration {
 

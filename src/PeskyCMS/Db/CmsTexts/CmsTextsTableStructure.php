@@ -1,10 +1,10 @@
 <?php
 
-namespace PeskyCMS\Db\Texts;
+namespace PeskyCMS\Db\CmsTexts;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMS\Db\Pages\CmsPagesTable;
+use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\Relation;
 use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;

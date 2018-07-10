@@ -1,11 +1,11 @@
 <?php
 
-namespace PeskyCMF\CMS\Redirects;
+namespace PeskyCMS\Db\CmsRedirects;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use PeskyCMF\Db\Admins\CmfAdminsTableStructure;
-use PeskyCMS\Db\Pages\CmsPagesTableStructure;
+use PeskyCMS\Db\CmsPages\CmsPagesTableStructure;
 
 class CmsRedirectsMigration extends Migration {
 

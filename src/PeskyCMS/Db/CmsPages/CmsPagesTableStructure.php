@@ -1,10 +1,10 @@
 <?php
 
-namespace PeskyCMS\Db\Pages;
+namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMS\Db\Texts\CmsTextsTable;
+use PeskyCMS\Db\CmsTexts\CmsTextsTable;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\RecordValue;
 use PeskyORM\ORM\Relation;
@@ -51,12 +51,9 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
     }
 
     private function type() {
-        /** @var CmsPage $page */
-        $page = app()->offsetGet(CmsPage::class);
-        return Column::create(Column::TYPE_ENUM)
+        return Column::create(Column::TYPE_STRING)
             ->disallowsNullValues()
-            ->setAllowedValues($page::getTypes())
-            ->setDefaultValue($page::TYPE_PAGE);
+            ->setDefaultValue('page');
     }
 
     private function parent_id() {
@@ -120,8 +117,7 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
             ->disallowsNullValues()
             ->setDefaultValue(function () {
                 /** @var CmsPagesTable $pagesTable */
-                $pagesTable = app(CmsPagesTable::class);
-                return $pagesTable::getCurrentTimeDbExpr();
+                return CmsPagesTable::getCurrentTimeDbExpr();
             });
     }
 
@@ -162,12 +158,12 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
     }
 
     private function Parent() {
-        return Relation::create('parent_id', Relation::BELONGS_TO, app(CmsPagesTable::class), 'id')
+        return Relation::create('parent_id', Relation::BELONGS_TO, CmsPagesTable::class, 'id')
             ->setDisplayColumnName('url_alias');
     }
 
     private function Texts() {
-        return Relation::create('id', Relation::HAS_MANY, app(CmsTextsTable::class), 'page_id')
+        return Relation::create('id', Relation::HAS_MANY, CmsTextsTable::class, 'page_id')
             ->setDisplayColumnName('title');
     }
 
