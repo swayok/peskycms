@@ -46,6 +46,10 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
         return 'cms_pages';
     }
 
+    private function admin_id() {
+        return Column::create(Column::TYPE_INT);
+    }
+
     private function type() {
         /** @var CmsPage $page */
         $page = app()->offsetGet(CmsPage::class);

@@ -25,6 +25,10 @@ class CmsTextElementsScaffoldConfig extends NormalTableScaffoldConfig {
         return CmsPagesTable::getInstance();
     }
 
+    public static function getResourceName() {
+        return 'cms_text_elements';
+    }
+
     static protected function getIconForMenuItem() {
         return 'fa fa-files-o';
     }

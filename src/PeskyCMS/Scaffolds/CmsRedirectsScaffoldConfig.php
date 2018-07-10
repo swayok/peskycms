@@ -21,6 +21,10 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
         return CmsRedirectsTable::class;
     }
 
+    public static function getResourceName() {
+        return 'cms_redirects';
+    }
+
     static protected function getIconForMenuItem() {
         return 'fa fa-map-signs';
     }

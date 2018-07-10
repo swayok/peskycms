@@ -40,6 +40,10 @@ class CmsTextsTableStructure extends CmfDbTableStructure {
             ->convertsEmptyStringToNull();
     }
 
+    private function admin_id() {
+        return Column::create(Column::TYPE_INT);
+    }
+
     private function language() {
         return Column::create(Column::TYPE_STRING)
             ->disallowsNullValues()

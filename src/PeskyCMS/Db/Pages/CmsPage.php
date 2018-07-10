@@ -60,8 +60,6 @@ use PeskyORM\ORM\RecordsSet;
  */
 class CmsPage extends CmfDbRecord {
 
-    static protected $tableClass = CmsPagesTable::class;
-
     const TYPE_PAGE = 'page';
     const TYPE_CATEGORY = 'category';
     const TYPE_ITEM = 'item';
@@ -88,6 +86,10 @@ class CmsPage extends CmfDbRecord {
     ];
     /** @var CmsTextWrapper */
     protected $textsWrapper;
+
+    public static function getTable(): CmsPagesTable {
+        return CmsPagesTable::getInstance();
+    }
 
     static public function getTypes($asOptions = false) {
         return static::toOptions(static::$types, $asOptions, function ($value) {

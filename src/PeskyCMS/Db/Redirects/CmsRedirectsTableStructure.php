@@ -36,6 +36,10 @@ class CmsRedirectsTableStructure extends CmfDbTableStructure {
             ->convertsEmptyStringToNull();
     }
 
+    private function admin_id() {
+        return Column::create(Column::TYPE_INT);
+    }
+
     private function relative_url() {
         return Column::create(Column::TYPE_STRING)
             ->disallowsNullValues();
@@ -45,10 +49,6 @@ class CmsRedirectsTableStructure extends CmfDbTableStructure {
         return Column::create(Column::TYPE_BOOL)
             ->disallowsNullValues()
             ->setDefaultValue(true);
-    }
-
-    private function admin_id() {
-        return Column::create(Column::TYPE_INT);
     }
 
     private function Page() {

@@ -29,6 +29,10 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
         return CmsPagesTable::getInstance();
     }
 
+    public static function getResourceName() {
+        return 'cms_pages';
+    }
+
     static protected function getIconForMenuItem() {
         return 'fa fa-file-text-o';
     }

@@ -25,6 +25,10 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
         return CmsPagesTable::getInstance();
     }
 
+    public static function getResourceName() {
+        return 'cms_news';
+    }
+
     static protected function getIconForMenuItem() {
         return 'fa fa-newspaper-o';
     }

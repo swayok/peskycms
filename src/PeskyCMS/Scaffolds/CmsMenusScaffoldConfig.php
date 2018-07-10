@@ -25,6 +25,10 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
         return CmsPagesTable::getInstance();
     }
 
+    public static function getResourceName() {
+        return 'cms_menus';
+    }
+
     static protected function getIconForMenuItem() {
         return 'fa fa-list';
     }
