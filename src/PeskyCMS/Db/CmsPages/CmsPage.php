@@ -4,9 +4,7 @@ namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMF\Db\CmfDbRecord;
-use PeskyCMS\Db\CmsTexts\CmsText;
 use PeskyCMS\Db\CmsTexts\CmsTextWrapper;
-use PeskyORM\ORM\RecordsSet;
 
 /**
  * @property-read int         $id
@@ -15,13 +13,22 @@ use PeskyORM\ORM\RecordsSet;
  * @property-read string      $type
  * @property-read string      $title
  * @property-read string      $comment
+ * @property-read string      $texts
+ * @property-read string      $texts_ar_array
+ * @property-read \stdClass   $texts_ar_object
  * @property-read string      $url_alias
  * @property-read string      $relative_url
  * @property-read null|string $page_code
- * @property-read null|string $images
+ * @property-read string      $images
+ * @property-read array       $images_as_array
+ * @property-read \stdClass   $images_as_object
+ * @property-read array       $images_as_urls
+ * @property-read array       $images_as_urls_with_timestamps
+ * @property-read array       $images_as_paths
+ * @property-read array       $images_as_file_info_arrays
  * @property-read string      $meta_description
  * @property-read string      $meta_keywords
- * @property-read null|int    $order
+ * @property-read null|int    $position
  * @property-read string      $with_contact_form
  * @property-read string      $is_published
  * @property-read string      $publish_at
@@ -37,9 +44,10 @@ use PeskyORM\ORM\RecordsSet;
  * @property-read string      $updated_at_as_time
  * @property-read int         $updated_at_as_unix_ts
  * @property-read string      $custom_info
+ * @property-read string      $custom_info_as_array
+ * @property-read \stdClass   $custom_info_as_object
  * @property-read CmsPage     $Parent
  * @property-read CmfAdmin    $Admin
- * @property-read CmsText[]|RecordsSet   $Texts
  *
  * @method $this    setId($value, $isFromDb = false)
  * @method $this    setParentId($value, $isFromDb = false)
@@ -47,6 +55,7 @@ use PeskyORM\ORM\RecordsSet;
  * @method $this    setType($value, $isFromDb = false)
  * @method $this    setTitle($value, $isFromDb = false)
  * @method $this    setComment($value, $isFromDb = false)
+ * @method $this    setTexts($value, $isFromDb = false)
  * @method $this    setUrlAlias($value, $isFromDb = false)
  * @method $this    setPageCode($value, $isFromDb = false)
  * @method $this    setImages($value, $isFromDb = false)
@@ -93,13 +102,13 @@ class CmsPage extends CmfDbRecord {
 
     static public function getTypes($asOptions = false) {
         return static::toOptions(static::$types, $asOptions, function ($value) {
-            return cmfTransCustom('.pages.types.' . $value);
+            return cmfTransCustom('.cms_pages.type.' . $value);
         }, true);
     }
 
     static public function getTypesWithoutUrls($asOptions = false) {
         return static::toOptions(static::$typesWithoutUrls, $asOptions, function ($value) {
-            return cmfTransCustom('.pages.types.' . $value);
+            return cmfTransCustom('.cms_pages.type.' . $value);
         }, true);
     }
 

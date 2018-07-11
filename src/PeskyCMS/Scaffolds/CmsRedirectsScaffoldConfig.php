@@ -9,6 +9,7 @@ use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
 use PeskyCMS\Db\CmsPages\CmsPage;
 use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Db\CmsRedirects\CmsRedirectsTable;
+use Swayok\Utils\Set;
 
 class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
 
@@ -46,7 +47,8 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
             ->setColumns([
                 'id' => DataGridColumn::create()
                     ->setWidth(40),
-                'relative_url',
+                'from_url',
+                'to_url',
                 'page_id' => DataGridColumn::create()
                     ->setType(DataGridColumn::TYPE_LINK),
                 'is_permanent',
@@ -58,7 +60,8 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
         return parent::createDataGridFilterConfig()
             ->setFilters([
                 'id',
-                'relative_url',
+                'from_url',
+                'to_url',
                 'page_id',
                 'is_permanent',
                 'admin_id',
@@ -74,7 +77,8 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
             ])
             ->setValueCells([
                 'id',
-                'relative_url',
+                'from_url',
+                'to_url',
                 'page_id' => ValueCell::create()
                     ->setType(ValueCell::TYPE_LINK),
                 'is_permanent',
@@ -89,7 +93,8 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
         return parent::createFormConfig()
             ->setWidth(50)
             ->setFormInputs([
-                'relative_url',
+                'from_url',
+                'to_url',
                 'page_id' => FormInput::create()
                     ->setType(FormInput::TYPE_SELECT)
                     ->setOptionsLoader(function () {
@@ -101,36 +106,41 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
                     ->setSubmittedValueModifier(function () {
                         return static::getUser()->id;
                     }),
-            ]);
+            ])
+            ->setValidators(function ($data) {
+                $validators = [
+                    'from_url' => 'required|string|regex:%^\/.+|unique_ceseinsensitive:' . static::getTable()->getName() . ',from_url,{{id}},id',
+                ];
+                if (empty($data['page_id'])) {
+                    $validators['to_url'] = 'required|string|regex:%^\/.+%';
+                } else {
+                    $validators['to_url'] = 'nullable|string|regex:%^$%';
+                }
+                return $validators;
+            });
     }
 
     protected function getPagesOptions() {
         /** @var CmsPage $pageClass */
         $pageClass = get_class(static::getPagesTable()->newRecord());
+        $typesTranslations = $this->translate('form.input.page_types');
         $pages = static::getPagesTable()->select(
-            ['id', 'url_alias', 'type', 'parent_id', 'Parent' => ['id', 'url_alias', 'parent_id']],
-            [
-                'type !=' => $pageClass::getTypesWithoutUrls(),
-                'url_alias IS NOT' => null,
-                'url_alias !=' => ''
-            ]
-        );
-        $pages->optimizeIteration();
-        $optionsByType = [];
-        /** @var CmsPage $page */
-        foreach ($pages as $page) {
-            if (!array_key_exists($page->type, $optionsByType)) {
-                $optionsByType[$page->type] = [];
-            }
-            $relativeUrl = $page->relative_url;
-            $optionsByType[$page->type][$page->id] = $relativeUrl;
-        }
-        $options = [];
-        foreach ($optionsByType as $type => $pages) {
-            asort($pages);
-            $options[$this->translate('form.input', 'page_types.' . $type)] = $pages;
-        }
-        return $options;
+                ['id', 'url_alias', 'type', 'parent_id', 'Parent' => ['id', 'url_alias', 'parent_id']],
+                [
+                    'type !=' => $pageClass::getTypesWithoutUrls(),
+                    'url_alias IS NOT' => null,
+                    'url_alias !=' => ''
+                ]
+            )
+            ->getDataFromEachObject(function ($page) use ($typesTranslations) {
+                /** @var CmsPage $page */
+                return [
+                    'id' => $page->id,
+                    'relative_url' => $page->relative_url,
+                    'type' => array_get($typesTranslations, $page->type, $page->type)
+                ];
+            });
+        return Set::combine($pages, '/id', '/relative_url', '/type');
     }
 
 }

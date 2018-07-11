@@ -19,35 +19,29 @@ class CmsPagesMigration extends Migration {
                 $table->string('comment', 1000)->default('');
                 $table->string('url_alias')->nullable();
                 $table->string('page_code')->nullable();
+                $table->string('meta_description', 1000)->default('');
+                $table->string('meta_keywords', 500)->default('');
+                $table->integer('position')->nullable();
+                $table->boolean('with_contact_form')->default(false);
+                $table->boolean('is_published')->default(true);
+                $table->timestampTz('publish_at')->default(\DB::raw('NOW()'));
+                $table->timestampTz('created_at')->default(\DB::raw('NOW()'));
+                $table->timestampTz('updated_at')->default(\DB::raw('NOW()'));
+
                 if (config('database.connections.' . config('database.default') . '.driver') === 'pgsql') {
+                    $table->jsonb('texts');
+                    $table->jsonb('custom_info');
                     $table->jsonb('images')->default('{}');
                 } else {
+                    $table->text('texts');
+                    $table->text('custom_info');
                     $table->mediumText('images')->nullable();
                 }
 
-                $table->string('meta_description', 1000)->default('');
-                $table->string('meta_keywords', 500)->default('');
-                $table->integer('order')->nullable();
-                $table->boolean('with_contact_form')->default(false);
-                $table->boolean('is_published')->default(true);
-                $currentTimestamp = \DB::raw(CmsPagesTable::quoteDbExpr(CmsPagesTable::getCurrentTimeDbExpr()->setWrapInBrackets(false)));
-                $table->timestampTz('publish_at')->default($currentTimestamp);
-                $table->timestampTz('created_at')->default($currentTimestamp);
-                $table->timestampTz('updated_at')->default($currentTimestamp);
-
-                if (config('database.connections.' . config('database.default') . '.driver') === 'pgsql') {
-                    $table->jsonb('custom_info');
-                } else {
-                    $table->text('custom_info');
-                }
-
                 $table->index('parent_id');
-                $table->index('publish_at');
-                $table->index('created_at');
-                $table->index('updated_at');
-                $table->index('order');
+                $table->index('admin_id');
                 $table->index('is_published');
-                $table->unique('url_alias');
+                $table->unique(['url_alias', 'parent_id']);
                 $table->unique('page_code');
 
                 $table->foreign('parent_id')

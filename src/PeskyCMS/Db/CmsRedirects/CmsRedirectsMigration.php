@@ -15,16 +15,14 @@ class CmsRedirectsMigration extends Migration {
                 $table->increments('id');
                 $table->integer('page_id')->nullable()->unsigned();
                 $table->integer('admin_id')->nullable()->unsigned();
-                $table->string('relative_url', 500);
+                $table->string('from_url', 500);
+                $table->string('to_url', 500)->nullable();
                 $table->boolean('is_permanent')->default(true);
 
-                $currentTimestamp = \DB::raw(CmsRedirectsTable::quoteDbExpr(CmsRedirectsTable::getCurrentTimeDbExpr()->setWrapInBrackets(false)));
-                $table->timestampTz('created_at')->default($currentTimestamp);
-                $table->timestampTz('updated_at')->default($currentTimestamp);
+                $table->timestampTz('created_at')->default(\DB::raw('NOW()'));
+                $table->timestampTz('updated_at')->default(\DB::raw('NOW()'));
 
-                $table->index('created_at');
-                $table->index('updated_at');
-                $table->unique('relative_url');
+                $table->unique('from_url');
 
                 $table->foreign('page_id')
                     ->references('id')

@@ -10,17 +10,6 @@ use PeskyORM\ORM\Relation;
 use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;
 use PeskyORMLaravel\Db\TableStructureTraits\TimestampColumns;
 
-/**
- * @property-read Column    $id
- * @property-read Column    $page_id
- * @property-read Column    $admin_id
- * @property-read Column    $relative_url
- * @property-read Column    $is_permanent
- * @property-read Column    $created_at
- * @property-read Column    $updated_at
- * @property-read Relation  $Page
- * @property-read Relation  $Admin
- */
 class CmsRedirectsTableStructure extends CmfDbTableStructure {
 
     use IdColumn,
@@ -31,18 +20,21 @@ class CmsRedirectsTableStructure extends CmfDbTableStructure {
     }
 
     private function page_id() {
-        return Column::create(Column::TYPE_INT)
-            ->disallowsNullValues()
-            ->convertsEmptyStringToNull();
+        return Column::create(Column::TYPE_INT);
     }
 
     private function admin_id() {
         return Column::create(Column::TYPE_INT);
     }
 
-    private function relative_url() {
+    private function from_url() {
         return Column::create(Column::TYPE_STRING)
+            ->uniqueValues()
             ->disallowsNullValues();
+    }
+
+    private function to_url() {
+        return Column::create(Column::TYPE_STRING);
     }
 
     private function is_permanent() {

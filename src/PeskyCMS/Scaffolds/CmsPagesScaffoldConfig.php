@@ -84,7 +84,8 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
         $itemDetailsConfig = parent::createItemDetailsConfig();
         $itemDetailsConfig
             ->readRelations([
-                'Parent', 'Admin', 'Texts'
+                'Parent' => ['*'],
+                'Admin' => ['*']
             ])
             ->addTab($this->translate('item_details.tab', 'general'), [
                 'id',
@@ -110,9 +111,9 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                     ->setType(ValueCell::TYPE_LINK),
             ])
             ->setRawRecordDataModifier(function ($record) {
-                if (!empty($record['Texts'])) {
+                /*if (!empty($record['Texts'])) {
                     $record['Texts'] = Set::combine($record['Texts'], '/language', '/');
-                }
+                }*/
                 return $record;
             });
         if (static::getTable()->getTableStructure()->images->hasImagesGroupsConfigurations()) {
@@ -122,20 +123,20 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
         }
         foreach (setting()->languages() as $langId => $langLabel) {
             $itemDetailsConfig->addTab($this->translate('item_details.tab', 'texts', ['language' => $langLabel]), [
-                "Texts.$langId.id" => ValueCell::create()->setNameForTranslation('Texts.id'),
-                "Texts.$langId.language" => ValueCell::create()
-                    ->setNameForTranslation('Texts.language')
+                "texts:$langId.id" => ValueCell::create()->setNameForTranslation('texts.id'),
+                "texts:$langId.language" => ValueCell::create()
+                    ->setNameForTranslation('texts.language')
                     ->setValueConverter(function () use ($langLabel) {
                         return $langLabel;
                     }),
-                "Texts.$langId.browser_title" => ValueCell::create()->setNameForTranslation('Texts.browser_title'),
-                "Texts.$langId.menu_title" => ValueCell::create()->setNameForTranslation('Texts.menu_title'),
-                "Texts.$langId.meta_description" => ValueCell::create()->setNameForTranslation('Texts.meta_description'),
-                "Texts.$langId.meta_keywords" => ValueCell::create()->setNameForTranslation('Texts.meta_keywords'),
-//                "Texts.$langId.comment" => ValueCell::create()->setNameForTranslation('Texts.comment'),
-                "Texts.$langId.content" => ValueCell::create()
+                "texts:$langId.browser_title" => ValueCell::create()->setNameForTranslation('texts.browser_title'),
+                "texts:$langId.menu_title" => ValueCell::create()->setNameForTranslation('texts.menu_title'),
+                "texts:$langId.meta_description" => ValueCell::create()->setNameForTranslation('texts.meta_description'),
+                "texts:$langId.meta_keywords" => ValueCell::create()->setNameForTranslation('texts.meta_keywords'),
+//                "texts:$langId.comment" => ValueCell::create()->setNameForTranslation('texts.comment'),
+                "texts:$langId.content" => ValueCell::create()
                     ->setType(ValueCell::TYPE_HTML)
-                    ->setNameForTranslation('Texts.content'),
+                    ->setNameForTranslation('texts.content'),
 
             ]);
         }
@@ -149,21 +150,26 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
         $formConfig
             ->setWidth(80)
             ->addTab($this->translate('form.tab', 'general'), [
-                'title',
+                'title' => FormInput::create()
+                    ->setDefaultRendererConfigurator(function (InputRenderer $renderer) {
+                        $renderer->setIsRequired(true);
+                    }),
                 'parent_id' => FormInput::create()
                     ->setType(FormInput::TYPE_SELECT)
                     ->setOptionsLoader(function ($pkValue) use ($pageClass) {
                         return CmsPagesScaffoldsHelper::getPagesUrlsOptions($pageClass::TYPE_PAGE, (int)$pkValue);
                     })
                     ->setDefaultRendererConfigurator(function (InputRenderer $renderer) {
-                        $renderer->addData('isHidden', true);
+                        $renderer
+                            ->addAttribute('class', 'form-control', true)
+                            ->addData('isHidden', true);
                     }),
                 'url_alias' => FormInput::create()
                     ->setDefaultRendererConfigurator(function (InputRenderer $rendererConfig) use ($formConfig) {
                         $rendererConfig
                             ->setIsRequired(true)
-                            ->setPrefixText('<span id="parent-id-url-alias"></span>')
-                            ->addAttribute('data-regexp', '^[a-z0-9_/-]+$')
+                            ->setPrefixText('<div class="ib" id="parent-id-url-alias"></div>')
+                            ->addAttribute('data-regexp', '^/[a-z0-9_/-]+$')
                             ->addAttribute('placeholder', $this->translate('form.input', 'url_alias_placeholder'));
                     })
                     ->setSubmittedValueModifier(function ($value) {
@@ -188,44 +194,18 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 static::getTable()->registerUniquePageUrlValidator($this);
                 $validators = [
                     'is_published' => 'required|bool',
-                    'title' => 'string|max:500',
-                    'comment' => 'string|max:1000',
+                    'title' => 'required|string|max:500',
+                    'comment' => 'nullable|string|max:1000',
+                    'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
+                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:' . static::getTable()->getName() . ',page_code,{{id}},id',
                 ];
                 foreach (setting()->languages() as $lang => $lebel) {
-                    $validators["Texts.$lang.browser_title"] = "required_with:Texts.$lang.content";
+                    $validators["texts.$lang.browser_title"] = "required_with:texts.$lang.content";
                 }
                 return $validators;
             })
-            ->addValidatorsForCreate(function () {
-                return [
-                    'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
-                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:pages,page_code',
-                ];
-            })
-            ->addValidatorsForEdit(function () {
-                return [
-                    'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
-                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:pages,page_code,{{id}},id',
-                ];
-            })
-            ->setRawRecordDataModifier(function (array $record) {
-                if (!empty($record['Texts'])) {
-                    $record['Texts'] = Set::combine($record['Texts'], '/language', '/');
-                }
-                return $record;
-            })
             ->setIncomingDataModifier(function (array $data) use ($pageClass) {
-                if (!empty($data['Texts']) && is_array($data['Texts'])) {
-                    foreach ($data['Texts'] as $i => &$textData) {
-                        if (empty($textData['id'])) {
-                            unset($textData['id']);
-                        }
-                    }
-                }
-                unset($textData);
-                $data['type'] = $pageClass::TYPE_PAGE;
-                $data['admin_id'] = static::getUser()->id;
-                return $data;
+                return CmsPagesScaffoldsHelper::modifyIncomingData($this, $data, $pageClass::TYPE_PAGE);
             });
 
         if (static::getTable()->getTableStructure()->images->hasImagesGroupsConfigurations()) {
@@ -235,13 +215,17 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
         }
         foreach (setting()->languages() as $langId => $langLabel) {
             $formConfig->addTab($this->translate('form.tab', 'texts', ['language' => $langLabel]), [
-                "Texts.$langId.id" => FormInput::create()->setType(FormInput::TYPE_HIDDEN),
-                "Texts.$langId.browser_title" => FormInput::create()->setNameForTranslation('Texts.browser_title'),
-                "Texts.$langId.menu_title" => FormInput::create()->setNameForTranslation('Texts.menu_title'),
-                "Texts.$langId.meta_description" => FormInput::create()->setNameForTranslation('Texts.meta_description'),
-                "Texts.$langId.meta_keywords" => FormInput::create()->setNameForTranslation('Texts.meta_keywords'),
-                "Texts.$langId.comment" => FormInput::create()->setNameForTranslation('Texts.comment'),
-                "Texts.$langId.content" => WysiwygFormInput::create()
+                "texts:$langId.browser_title" => FormInput::create()
+                    ->setNameForTranslation('texts.browser_title'),
+                "texts:$langId.menu_title" => FormInput::create()
+                    ->setNameForTranslation('texts.menu_title'),
+                "texts:$langId.meta_description" => FormInput::create()
+                    ->setNameForTranslation('texts.meta_description'),
+                "texts:$langId.meta_keywords" => FormInput::create()
+                    ->setNameForTranslation('texts.meta_keywords'),
+                "texts:$langId.comment" => FormInput::create()
+                    ->setNameForTranslation('texts.comment'),
+                "texts:$langId.content" => WysiwygFormInput::create()
                     ->setRelativeImageUploadsFolder('/assets/wysiwyg/pages')
                     ->setDataInserts(function () {
                         return $this->getDataInsertsForContentEditor();
@@ -249,54 +233,15 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                     ->setHtmlInserts(function () {
                         return CmfConfig::getPrimary()->getWysywygHtmlInsertsForCmsPages($this);
                     })
-                    ->setNameForTranslation('Texts.content'),
-                "Texts.$langId.language" => FormInput::create()
+                    ->setNameForTranslation('texts.content'),
+                "texts:$langId.language" => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN)
                     ->setSubmittedValueModifier(function () use ($langId) {
                         return $langId;
                     }),
-                "Texts.$langId.admin_id" => FormInput::create()
-                    ->setType(FormInput::TYPE_HIDDEN)
-                    ->setSubmittedValueModifier(function () {
-                        return static::getUser()->id;
-                    }),
             ]);
         }
         return $formConfig;
-    }
-
-    protected function addUniquePageUrlValidator() {
-        \Validator::extend('unique_page_url', function () {
-            $urlAlias = request()->input('url_alias');
-            $parentId = (int)request()->input('parent_id');
-            if ($parentId > 0 && $urlAlias === '/') {
-                return false;
-            } else {
-                return static::getTable()->count([
-                    'url_alias' => $urlAlias,
-                    'id !=' => (int)request()->input('id'),
-                    'parent_id' => $parentId > 0 ? $parentId : null
-                ]) === 0;
-            }
-        });
-        \Validator::replacer('unique_page_url', function () {
-            $urlAlias = request()->input('url_alias');
-            $parentId = (int)request()->input('parent_id');
-            if ($parentId > 0 && $urlAlias === '/') {
-                $otherPageId = $parentId;
-            } else {
-                $otherPageId = static::getTable()->selectValue(
-                    DbExpr::create('`id`'),
-                    [
-                        'url_alias' => $urlAlias,
-                        'parent_id' => $parentId > 0 ? $parentId : null
-                    ]
-                );
-            }
-            return $this->translate('form.validation', 'unique_page_url', [
-                'url' => routeToCmfItemEditForm(static::getResourceName(), $otherPageId)
-            ]);
-        });
     }
 
     protected function getDataInsertsForContentEditor() {

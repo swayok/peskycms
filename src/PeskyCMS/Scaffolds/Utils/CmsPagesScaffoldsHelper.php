@@ -28,8 +28,8 @@ abstract class CmsPagesScaffoldsHelper {
                         'label' => $scaffold->translate('form.input.content_inserts', 'page_field_arg_label'),
                         'type' => 'select',
                         'options' => [
-                            'menu_title' => $scaffold->translate('form.input', 'Texts.menu_title'),
-                            'content' => $scaffold->translate('form.input', 'Texts.content'),
+                            'menu_title' => $scaffold->translate('form.input', 'texts.menu_title'),
+                            'content' => $scaffold->translate('form.input', 'texts.content'),
                         ],
                         'value' => 'content'
                     ]
@@ -143,7 +143,10 @@ abstract class CmsPagesScaffoldsHelper {
             'url_alias !=' => '/'
         ]);
         $pages->optimizeIteration();
-        $baseUrl = request()->getSchemeAndHttpHost();
+        /** @var PeskyCmfAppSettings $appSettings */
+        $appSettings = app(PeskyCmfAppSettings::class);
+        $baseUrlSuffix = '/' . trim((string)$appSettings::cms_pages_base_url(). '/');
+        $baseUrl = request()->getSchemeAndHttpHost() . rtrim($baseUrlSuffix, '/');
         $options = ['' => $baseUrl];
         /** @var CmsPage $page */
         foreach ($pages as $page) {
@@ -174,13 +177,41 @@ abstract class CmsPagesScaffoldsHelper {
             parentIdSelect.selectpicker();
             parentIdSelectContainer
                 .css('height', '32px')
+                .css('min-width', '150px')
                 .addClass('mn')
                 .find('button.dropdown-toggle')
                     .addClass('br-n')
+                    .css('line-height', '30px')
+                    .css('padding', '1px 30px 0 10px')
+                    .find('.filter-option')
+                        .css('position', 'static')
+                        .css('padding', '0')
+                        .end()
+                    .end()
+                .find('.dropdown.bootstrap-select')
+                    .css('height', '32px')  
+                    .css('line-height', '32px')  
                     .end()
                 .find('.dropdown-menu')
                     .css('margin', '0 0 0 -1px');
                 
 SCRIPT;
+    }
+
+    static public function modifyIncomingData(ScaffoldConfig $scaffold, array $data, string $pageType) {
+        if (!empty($data['texts']) && is_array($data['texts'])) {
+            $texts = [];
+            foreach ($data['texts'] as $key => $textData) {
+                $content = array_get($textData, 'content', '');
+                if (trim($content) === '') {
+                    continue;
+                }
+                $texts[$key] = $textData;
+            }
+            $data['texts'] = $texts;
+        }
+        $data['type'] = $pageType;
+        $data['admin_id'] = $scaffold::getUser()->id;
+        return $data;
     }
 }

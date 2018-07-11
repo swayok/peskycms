@@ -11,7 +11,8 @@ use PeskyCMS\Db\CmsPages\CmsPagesTable;
  * @property-read int         $id
  * @property-read null|int    $page_id
  * @property-read null|int    $admin_id
- * @property-read string      $relative_url
+ * @property-read string      $from_url
+ * @property-read null|string $to_url
  * @property-read string      $is_permanent
  * @property-read string      $created_at
  * @property-read string      $created_at_as_date
@@ -42,8 +43,9 @@ class CmsRedirect extends CmfDbRecord {
         parent::afterSave($isCreated, $updatedColumns);
         /** @var CmsPagesTable $pagesTable */
         $pagesTable = static::getTable();
-        $childPages = $pagesTable::select('*', ['parent_id' => $this->page_id]);
-        $childPages->optimizeIteration();
+        $childPages = $pagesTable::select('*', ['parent_id' => $this->page_id])
+            ->enableDbRecordInstanceReuseDuringIteration()
+            ->enableReadOnlyMode();
         $redirect = static::newEmptyRecord();
         /** @var CmsPage $page */
         foreach ($childPages as $page) {
@@ -52,7 +54,7 @@ class CmsRedirect extends CmfDbRecord {
                     ->reset()
                     ->setAdminId($this->admin_id)
                     ->setIsPermanent($this->is_permanent)
-                    ->setRelativeUrl(rtrim($this->relative_url, '/') . '/' . trim($page->url_alias, '/'))
+                    ->setRelativeUrl(rtrim($this->from_url, '/') . '/' . trim($page->url_alias, '/'))
                     ->setPageId($page->id)
                     ->save();
             }

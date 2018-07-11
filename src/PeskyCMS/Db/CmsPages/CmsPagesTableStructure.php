@@ -4,7 +4,7 @@ namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
-use PeskyCMS\Db\CmsTexts\CmsTextsTable;
+use PeskyORM\Core\DbExpr;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\RecordValue;
 use PeskyORM\ORM\Relation;
@@ -13,26 +13,6 @@ use PeskyORMLaravel\Db\TableStructureTraits\IdColumn;
 use PeskyORMLaravel\Db\TableStructureTraits\IsPublishedColumn;
 use PeskyORMLaravel\Db\TableStructureTraits\TimestampColumns;
 
-/**
- * @property-read Column    $id
- * @property-read Column    $parent_id
- * @property-read Column    $admin_id
- * @property-read Column    $type
- * @property-read Column    $title
- * @property-read Column    $comment
- * @property-read Column    $url_alias
- * @property-read Column    $page_code
- * @property-read ImagesColumn    $images
- * @property-read Column    $meta_description
- * @property-read Column    $meta_keywords
- * @property-read Column    $order
- * @property-read Column    $with_contact_form
- * @property-read Column    $is_published
- * @property-read Column    $publish_at
- * @property-read Column    $created_at
- * @property-read Column    $updated_at
- * @property-read Column    $custom_info
- */
 class CmsPagesTableStructure extends CmfDbTableStructure {
 
     use IdColumn,
@@ -75,7 +55,7 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
 
     private function url_alias() {
         return Column::create(Column::TYPE_STRING)
-            ->uniqueValues()
+            ->uniqueValues(Column::CASE_SENSITIVE, 'parent_id')
             ->convertsEmptyStringToNull();
     }
 
@@ -115,10 +95,7 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
     private function publish_at() {
         return Column::create(Column::TYPE_TIMESTAMP)
             ->disallowsNullValues()
-            ->setDefaultValue(function () {
-                /** @var CmsPagesTable $pagesTable */
-                return CmsPagesTable::getCurrentTimeDbExpr();
-            });
+            ->setDefaultValue(DbExpr::create('NOW()'));
     }
 
     private function images() {
@@ -140,7 +117,7 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
             ->setDefaultValue('');
     }
 
-    private function order() {
+    private function position() {
         return Column::create(Column::TYPE_INT)
             ->convertsEmptyStringToNull();
     }
@@ -149,6 +126,12 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
         return Column::create(Column::TYPE_BOOL)
             ->disallowsNullValues()
             ->setDefaultValue(false);
+    }
+
+    private function texts() {
+        return Column::create(Column::TYPE_JSONB)
+            ->disallowsNullValues()
+            ->setDefaultValue('{}');
     }
 
     private function custom_info() {
@@ -160,11 +143,6 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
     private function Parent() {
         return Relation::create('parent_id', Relation::BELONGS_TO, CmsPagesTable::class, 'id')
             ->setDisplayColumnName('url_alias');
-    }
-
-    private function Texts() {
-        return Relation::create('id', Relation::HAS_MANY, CmsTextsTable::class, 'page_id')
-            ->setDisplayColumnName('title');
     }
 
     private function Admin() {

@@ -26,7 +26,7 @@ class CmsInstallCommand extends CmfCommand {
         }
         $migrationsPath = database_path('migrations') . DIRECTORY_SEPARATOR;
         $timestamp = time();
-        foreach (['cms_pages', 'cms_texts', 'cms_redirects'] as $index => $tableName) {
+        foreach (['cms_pages', 'cms_redirects'] as $index => $tableName) {
             $this->addMigrationForTable($tableName, $migrationsPath, $timestamp + $index, '', 'PeskyCMS');
         }
         $this->extender();

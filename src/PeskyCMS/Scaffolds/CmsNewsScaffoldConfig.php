@@ -106,20 +106,20 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
 //        }
         foreach (setting()->languages() as $langId => $langLabel) {
             $itemDetailsConfig->addTab($this->translate('item_details.tab', 'texts', ['language' => $langLabel]), [
-                "Texts.$langId.id" => ValueCell::create()->setNameForTranslation('Texts.id'),
-                "Texts.$langId.language" => ValueCell::create()
-                    ->setNameForTranslation('Texts.language')
+                "texts:$langId.id" => ValueCell::create()->setNameForTranslation('texts.id'),
+                "texts:$langId.language" => ValueCell::create()
+                    ->setNameForTranslation('texts.language')
                     ->setValueConverter(function () use ($langLabel) {
                         return $langLabel;
                     }),
-                "Texts.$langId.browser_title" => ValueCell::create()->setNameForTranslation('Texts.browser_title'),
-                "Texts.$langId.menu_title" => ValueCell::create()->setNameForTranslation('Texts.menu_title'),
-                "Texts.$langId.meta_description" => ValueCell::create()->setNameForTranslation('Texts.meta_description'),
-                "Texts.$langId.meta_keywords" => ValueCell::create()->setNameForTranslation('Texts.meta_keywords'),
-//                "Texts.$langId.comment" => ValueCell::create()->setNameForTranslation('Texts.comment'),
-                "Texts.$langId.content" => ValueCell::create()
+                "texts:$langId.browser_title" => ValueCell::create()->setNameForTranslation('texts.browser_title'),
+                "texts:$langId.menu_title" => ValueCell::create()->setNameForTranslation('texts.menu_title'),
+                "texts:$langId.meta_description" => ValueCell::create()->setNameForTranslation('texts.meta_description'),
+                "texts:$langId.meta_keywords" => ValueCell::create()->setNameForTranslation('texts.meta_keywords'),
+//                "texts:$langId.comment" => ValueCell::create()->setNameForTranslation('texts.comment'),
+                "texts:$langId.content" => ValueCell::create()
                     ->setType(ValueCell::TYPE_HTML)
-                    ->setNameForTranslation('Texts.content'),
+                    ->setNameForTranslation('texts.content'),
 
             ]);
         }
@@ -176,44 +176,18 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
                 $validators = [
                     'is_published' => 'required|boolean',
                     'publish_at' => 'required|date',
-                    'title' => 'string|max:500',
-                    'comment' => 'string|max:1000',
+                    'title' => 'required|string|max:500',
+                    'comment' => 'nullable|string|max:1000',
+                    'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
+                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:' . static::getTable()->getName() . ',page_code',
                 ];
                 foreach (setting()->languages() as $lang => $lebel) {
-                    $validators["Texts.$lang.browser_title"] = "required_with:Texts.$lang.content";
+                    $validators["texts.$lang.browser_title"] = "required_with:texts.$lang.content";
                 }
                 return $validators;
             })
-            ->addValidatorsForCreate(function () {
-                return [
-                    'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
-                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:pages,page_code',
-                ];
-            })
-            ->addValidatorsForEdit(function () {
-                return [
-                    'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
-                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:pages,page_code,{{id}},id',
-                ];
-            })
-            ->setRawRecordDataModifier(function (array $record) {
-                if (!empty($record['Texts'])) {
-                    $record['Texts'] = Set::combine($record['Texts'], '/language', '/');
-                }
-                return $record;
-            })
             ->setIncomingDataModifier(function (array $data) use ($pageClass) {
-                if (!empty($data['Texts']) && is_array($data['Texts'])) {
-                    foreach ($data['Texts'] as $i => &$textData) {
-                        if (empty($textData['id'])) {
-                            unset($textData['id']);
-                        }
-                    }
-                }
-                unset($textData);
-                $data['type'] = $pageClass::TYPE_NEWS;
-                $data['admin_id'] = static::getUser()->id;
-                return $data;
+                return CmsPagesScaffoldsHelper::modifyIncomingData($this, $data, $pageClass::TYPE_NEWS);
             });
 
 //        if (static::getTable()->getTableStructure()->images->hasImagesConfigurations()) {
@@ -223,13 +197,13 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
 //        }
         foreach (setting()->languages() as $langId => $langLabel) {
             $formConfig->addTab($this->translate('form.tab', 'texts', ['language' => $langLabel]), [
-                "Texts.$langId.id" => FormInput::create()->setType(FormInput::TYPE_HIDDEN),
-                "Texts.$langId.browser_title" => FormInput::create()->setNameForTranslation('Texts.browser_title'),
-                "Texts.$langId.menu_title" => FormInput::create()->setNameForTranslation('Texts.menu_title'),
-                "Texts.$langId.meta_description" => FormInput::create()->setNameForTranslation('Texts.meta_description'),
-                "Texts.$langId.meta_keywords" => FormInput::create()->setNameForTranslation('Texts.meta_keywords'),
-                "Texts.$langId.comment" => FormInput::create()->setNameForTranslation('Texts.comment'),
-                "Texts.$langId.content" => WysiwygFormInput::create()
+                "texts:$langId.id" => FormInput::create()->setType(FormInput::TYPE_HIDDEN),
+                "texts:$langId.browser_title" => FormInput::create()->setNameForTranslation('texts.browser_title'),
+                "texts:$langId.menu_title" => FormInput::create()->setNameForTranslation('texts.menu_title'),
+                "texts:$langId.meta_description" => FormInput::create()->setNameForTranslation('texts.meta_description'),
+                "texts:$langId.meta_keywords" => FormInput::create()->setNameForTranslation('texts.meta_keywords'),
+                "texts:$langId.comment" => FormInput::create()->setNameForTranslation('texts.comment'),
+                "texts:$langId.content" => WysiwygFormInput::create()
                     ->setRelativeImageUploadsFolder('/assets/wysiwyg/pages')
                     ->setDataInserts(function () {
                         return $this->getDataInsertsForContentEditor();
@@ -237,13 +211,13 @@ class CmsNewsScaffoldConfig extends NormalTableScaffoldConfig {
                     ->setHtmlInserts(function () {
                         return CmfConfig::getPrimary()->getWysywygHtmlInsertsForCmsPages($this);
                     })
-                    ->setNameForTranslation('Texts.content'),
-                "Texts.$langId.language" => FormInput::create()
+                    ->setNameForTranslation('texts.content'),
+                "texts:$langId.language" => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN)
                     ->setSubmittedValueModifier(function () use ($langId) {
                         return $langId;
                     }),
-                "Texts.$langId.admin_id" => FormInput::create()
+                "texts:$langId.admin_id" => FormInput::create()
                     ->setType(FormInput::TYPE_HIDDEN)
                     ->setSubmittedValueModifier(function () {
                         return static::getUser()->id;
