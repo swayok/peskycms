@@ -132,6 +132,7 @@ class CmsPageWrapper {
     }
 
     /**
+     * @noinspection MagicMethodsValidityInspection
      * @param string $property
      * @return mixed
      */

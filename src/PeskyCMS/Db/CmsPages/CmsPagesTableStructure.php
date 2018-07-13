@@ -4,6 +4,8 @@ namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Config\CmfConfig;
 use PeskyCMF\Db\CmfDbTableStructure;
+use PeskyCMF\PeskyCmfAppSettings;
+use PeskyCMS\PeskyCmsAppSettings;
 use PeskyORM\Core\DbExpr;
 use PeskyORM\ORM\Column;
 use PeskyORM\ORM\RecordValue;
@@ -67,7 +69,6 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                 return $value->getRecord()->existsInDb();
             })
             ->setValueGetter(function (RecordValue $value, $format = null) {
-                $baseUrl = '';
                 /** @var CmsPage $record */
                 $record = $value->getRecord();
                 if (
@@ -81,6 +82,10 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                     )
                 ) {
                     $baseUrl = $record->Parent->relative_url;
+                } else {
+                    /** @var PeskyCmsAppSettings $appSettings */
+                    $appSettings = app(PeskyCmfAppSettings::class);
+                    $baseUrl = rtrim('/' . trim($appSettings::cms_pages_url_prefix(), '/'), '/');
                 }
                 return $baseUrl . $record->url_alias;
             });

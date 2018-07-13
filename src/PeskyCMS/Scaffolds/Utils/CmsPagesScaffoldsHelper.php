@@ -9,6 +9,7 @@ use PeskyCMF\Scaffold\Form\WysiwygFormInput;
 use PeskyCMF\Scaffold\ScaffoldConfig;
 use PeskyCMS\Db\CmsPages\CmsPage;
 use PeskyCMS\Db\CmsPages\CmsPagesTable;
+use PeskyCMS\PeskyCmsAppSettings;
 
 abstract class CmsPagesScaffoldsHelper {
 
@@ -67,7 +68,7 @@ abstract class CmsPagesScaffoldsHelper {
                 $scaffold->translate('form.input.content_inserts', 'text_block_insert_widget_title_template')
             ),
         ];
-        /** @var PeskyCmfAppSettings $appSettings */
+        /** @var PeskyCmsAppSettings $appSettings */
         $appSettings = app(PeskyCmfAppSettings::class);
         foreach ($appSettings::getSettingsForWysiwygDataIsnserts() as $settingName) {
             $ret[] = WysiwygFormInput::createDataInsertConfig(
@@ -143,10 +144,14 @@ abstract class CmsPagesScaffoldsHelper {
             'url_alias !=' => '/'
         ]);
         $pages->optimizeIteration();
-        /** @var PeskyCmfAppSettings $appSettings */
+        /** @var PeskyCmsAppSettings $appSettings */
         $appSettings = app(PeskyCmfAppSettings::class);
-        $baseUrlSuffix = '/' . trim((string)$appSettings::cms_pages_base_url(). '/');
-        $baseUrl = request()->getSchemeAndHttpHost() . rtrim($baseUrlSuffix, '/');
+        $urlPrefix = trim((string)$appSettings::cms_pages_url_prefix(), '/');
+        if ($appSettings::cms_pages_use_relative_url()) {
+            $baseUrl = '/' . $urlPrefix;
+        } else {
+            $baseUrl = rtrim(request()->getSchemeAndHttpHost() . '/' . $urlPrefix, '/');
+        }
         $options = ['' => $baseUrl];
         /** @var CmsPage $page */
         foreach ($pages as $page) {
@@ -181,9 +186,11 @@ abstract class CmsPagesScaffoldsHelper {
                 .addClass('mn')
                 .find('button.dropdown-toggle')
                     .addClass('br-n')
-                    .css('line-height', '30px')
+                    .css('height', '32px')
+                    .css('line-height', '32px')
                     .css('padding', '1px 30px 0 10px')
                     .find('.filter-option')
+                        .addClass('ib')
                         .css('position', 'static')
                         .css('padding', '0')
                         .end()
@@ -192,8 +199,8 @@ abstract class CmsPagesScaffoldsHelper {
                     .css('height', '32px')  
                     .css('line-height', '32px')  
                     .end()
-                .find('.dropdown-menu')
-                    .css('margin', '0 0 0 -1px');
+                .find('div.dropdown-menu')
+                    .css('margin', '1px 0 0 -1px');
                 
 SCRIPT;
     }

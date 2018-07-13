@@ -9,6 +9,7 @@ use PeskyCMS\Scaffolds\CmsNewsScaffoldConfig;
 use PeskyCMS\Scaffolds\CmsPagesScaffoldConfig;
 use PeskyCMS\Scaffolds\CmsRedirectsScaffoldConfig;
 use PeskyCMS\Scaffolds\CmsTextElementsScaffoldConfig;
+use Swayok\Utils\File;
 
 class CmsInstallCommand extends CmfCommand {
 
@@ -23,6 +24,19 @@ class CmsInstallCommand extends CmfCommand {
     public function handle() {
         if (!$this->confirm('Have you previously installed PeskyCMF?', false)) {
             $this->call('cmf:install');
+        }
+        $appSettingsFilePath = app_path('AppSettings.php');
+        if (File::exist($appSettingsFilePath)) {
+            $contents = str_replace(
+                ['use PeskyCMF\PeskyCmfAppSettings;', 'extends PeskyCmfAppSettings'],
+                ['use PeskyCMS\PeskyCmsAppSettings;', 'extends PeskyCmsAppSettings'],
+                File::contents($appSettingsFilePath)
+            );
+            File::save($appSettingsFilePath, $contents);
+            $this->line($appSettingsFilePath . ' updated to extend PeskyCmsAppSettings class instead of PeskyCmfAppSettings class.');
+        } else {
+            $this->warn('Failed to locate AppSettings class using path ' . $appSettingsFilePath . '.');
+            $this->warn('To enable some CMS functionality you will need to extend PeskyCMS\PeskyCmsAppSettings by your AppSettings class' . $appSettingsFilePath . '.');
         }
         $migrationsPath = database_path('migrations') . DIRECTORY_SEPARATOR;
         $timestamp = time();
