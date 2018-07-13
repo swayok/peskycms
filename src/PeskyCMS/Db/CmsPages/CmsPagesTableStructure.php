@@ -69,6 +69,9 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                 return $value->getRecord()->existsInDb();
             })
             ->setValueGetter(function (RecordValue $value, $format = null) {
+                /** @var PeskyCmsAppSettings $appSettings */
+                $appSettings = app(PeskyCmfAppSettings::class);
+                $baseUrl = rtrim('/' . trim($appSettings::cms_pages_url_prefix(), '/'), '/');
                 /** @var CmsPage $record */
                 $record = $value->getRecord();
                 if (
@@ -81,11 +84,35 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                         && $record->Parent->existsInDb()
                     )
                 ) {
-                    $baseUrl = $record->Parent->relative_url;
+                    return $baseUrl . $record->Parent->full_path . $record->url_alias;
                 } else {
-                    /** @var PeskyCmsAppSettings $appSettings */
-                    $appSettings = app(PeskyCmfAppSettings::class);
-                    $baseUrl = rtrim('/' . trim($appSettings::cms_pages_url_prefix(), '/'), '/');
+                    return $baseUrl . $record->url_alias;
+                }
+            });
+    }
+
+    private function full_path() {
+        return Column::create(Column::TYPE_STRING)
+            ->doesNotExistInDb()
+            ->valueCannotBeSetOrChanged()
+            ->setValueExistenceChecker(function (RecordValue $value) {
+                return $value->getRecord()->existsInDb();
+            })
+            ->setValueGetter(function (RecordValue $value, $format = null) {
+                $baseUrl = '';
+                /** @var CmsPage $record */
+                $record = $value->getRecord();
+                if (
+                    (
+                        $record->hasValue('parent_id', false)
+                        && $record->parent_id !== null
+                    )
+                    || (
+                        $record->isRelatedRecordAttached('Parent')
+                        && $record->Parent->existsInDb()
+                    )
+                ) {
+                    $baseUrl = $record->Parent->full_path;
                 }
                 return $baseUrl . $record->url_alias;
             });

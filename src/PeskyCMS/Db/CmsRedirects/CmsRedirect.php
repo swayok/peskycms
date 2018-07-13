@@ -35,8 +35,8 @@ use PeskyCMS\Db\CmsPages\CmsPagesTable;
  */
 class CmsRedirect extends CmfDbRecord {
 
-    static public function getTable(): CmsPagesTable {
-        return CmsPagesTable::getInstance();
+    static public function getTable(): CmsRedirectsTable {
+        return CmsRedirectsTable::getInstance();
     }
 
     protected function afterSave($isCreated, array $updatedColumns = []) {

@@ -2,8 +2,10 @@
 
 namespace PeskyCMS;
 
+use App\AppSettings;
 use Illuminate\Routing\Route;
 use PeskyCMF\HttpCode;
+use PeskyCMF\PeskyCmfAppSettings;
 use PeskyCMS\Db\CmsPages\CmsPage;
 use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Db\CmsPages\CmsPageWrapper;
@@ -26,14 +28,22 @@ abstract class CmsFrontendUtils {
     /**
      * Declare route that will handle HTTP GET requests to CmsPagesTable
      * @param string|\Closure $routeAction - Closure, 'Controller@action' string, array.
-     *      It is used as 2nd argument for \Route:get('url', $routeAction)
-     * @param array $excludeUrlPrefixes - list of url prefixes used in application.
+     *      It is used as 2nd argument for \Route:get('url', $routeAction).
+     *      Example: 'PagesController@renderCmsPage'. Where renderCmsPage should look like:
+     *      public function renderCmsPage($url) {
+     *          return CmsFrontendUtils::renderPage($url, 'frontend.cms_page', ['vide_var' => 'value']);
+     *      }
+     * @param array $excludeUrlPrefixes - list of url prefixes used in application
+     * @param string $extension - url extension (for example: '.html')
      * For example: 'admin' is default url prefix for administration area. It should be excluded in order to allow
      * access to administration area. Otherwise this route will intercept it.
      * @return Route
      */
-    static public function addRouteForPages($routeAction, array $excludeUrlPrefixes = []) {
-        $route = \Route::get('{page_url}', $routeAction);
+    static public function addRouteForPages($routeAction, array $excludeUrlPrefixes = [], string $extension = '') {
+        /** @var PeskyCmsAppSettings $appSettings */
+        $appSettings = app(PeskyCmfAppSettings::class);
+        $prefix = '/' . trim($appSettings::cms_pages_url_prefix(), '/');
+        $route = \Route::get($prefix . '{page_url}' . $extension, $routeAction);
         if (count($excludeUrlPrefixes) > 0) {
             $route->where('page_url', '/?(?!' . implode('|', $excludeUrlPrefixes) . ').*');
         }
@@ -41,40 +51,23 @@ abstract class CmsFrontendUtils {
     }
 
     /**
-     * Declare route that will handle HTTP GET requests to CmsPagesTable using
-     * CmsFrontendUtils::renderPage() as route action.
-     * @param string $view - path to view that will render the page
-     * @param \Closure $viewData - function (CmsPageWrapper $page) { return [] }. Returns array with data
-     * to send to view in addition to 'texts' variable (CmsTextWrapper).
-     * @param array $excludeUrlPrefixes - list of url prefixes used in application.
-     * For example: 'admin' is default url prefix for administration area. It should be excluded in order to allow
-     * access to administration area. Otherwise this route will intercept it.
-     * @return Route
-     */
-    static public function addRouteForPagesWithDefaultAction($view, \Closure $viewData = null, array $excludeUrlPrefixes = []) {
-        return static::addRouteForPages(function ($pageUrl = '/') use ($view, $viewData) {
-            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-            return static::renderPage('/' . ltrim($pageUrl, '/'), $view, $viewData);
-        }, $excludeUrlPrefixes);
-    }
-
-    /**
      * Render $view with $viewData for page with $url.
      * If $url is detected in CmsRedirectsTable - client will be redirected to page provided by CmsRedirect->page_id;
      * If page for $url was not found - 404 page will be shown;
-     * 'texts' variable (CmsTextWrapper) will be additionally passed to a $view;
+     * 'texts' variable (CmsPageTexts) will be additionally passed to a $view;
+     * Data passed to $view:
+     *      @section('meta-description')
+     *      @section('meta-keywords')
+     *      @section('browser-title')
+     *      $page CmsPageWrapper
      * @param string $url - page's relative url
      * @param string|\Closure $view
      *      - string: path to view that will render the page;
      *      - \Closure - function (CmsPageWrapper $page) { return 'path.to.view'; }
      * @param \Closure $viewData - function (CmsPageWrapper $page) { return [] }. Returns array with data
-     * to send to view in addition to 'texts' variable (CmsTextWrapper).
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
-     * @throws \PeskyORM\Exception\InvalidDataException
+     * to send to view in addition to 'texts' variable (CmsPageTexts).
+     * @return string - rendered $view
      * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PDOException
-     * @throws \BadMethodCallException
      * @throws \InvalidArgumentException
      */
     static public function renderPage($url, $view, \Closure $viewData = null) {
@@ -82,7 +75,7 @@ abstract class CmsFrontendUtils {
         // search for url in redirects
         /** @var CmsRedirect $redirectClass */
         $redirect = CmsRedirect::find([
-            'relative_url ~*' => '^' . preg_quote($url, null) . '/*$'
+            'from_url ~*' => '^' . preg_quote($url, null) . '/*$'
         ]);
         if ($redirect->existsInDb()) {
             return redirect(
@@ -90,27 +83,27 @@ abstract class CmsFrontendUtils {
                 $redirect->is_permanent ? HttpCode::MOVED_PERMANENTLY : HttpCode::MOVED_TEMPORARILY
             );
         }
-        $page = static::getPageByUrl($url);
-        if (!$page->isValid()) {
+        $wrappedPage = static::getWrappedPageByUrl($url);
+        if (!$wrappedPage->isValid()) {
             abort(404);
         }
         $data = [];
         if (!empty($viewData)) {
-            $data = $viewData($page);
+            $data = $viewData($wrappedPage);
             if (!is_array($data)) {
                 throw new \UnexpectedValueException('$viewData closure must return an array');
             }
         }
-        $page->sendMetaTagsAndPageTitleSectionToLayout();
+        $wrappedPage->sendMetaTagsAndPageTitleSectionToLayout();
         if ($view instanceof \Closure) {
-            $view = $view($page);
+            $view = $view($wrappedPage);
         }
         if (!is_string($view) || empty($view)) {
             throw new \InvalidArgumentException(
                 '$view argument must be a not empty string or closure that returns not empty string'
             );
         }
-        return view($view, array_merge($data, ['page' => $page]))->render();
+        return view($view, array_merge($data, ['page' => $wrappedPage]))->render();
     }
 
     /**
@@ -134,7 +127,7 @@ abstract class CmsFrontendUtils {
     }
 
     /**
-     * @param int $pageIdOrPageCode
+     * @param int|string $pageIdOrPageCode
      * @param null|string $linkText
      * @param bool $openInNewTab
      * @return Tag
@@ -162,6 +155,23 @@ abstract class CmsFrontendUtils {
             ->setContent(trim(stripslashes($linkText)))
             ->setHref(rtrim($page->relative_url, '/'))
             ->setAttribute('target', $openInNewTab ? '_blank' : null);
+    }
+
+    /**
+     * @param int|string $pageIdOrPageCode
+     * @param bool $absolute
+     * @return null|string
+     */
+    static public function getUrlToPage($pageIdOrPageCode, bool $absolute = false): ?string {
+        $page = static::getPageWrapper($pageIdOrPageCode);
+        if (!$page->isValid()) {
+            return null;
+        }
+        if ($absolute) {
+            return \URL::to($page->relative_url);
+        } else {
+            return $page->relative_url;
+        }
     }
 
     /**
@@ -286,11 +296,10 @@ abstract class CmsFrontendUtils {
      */
     static public function getPageWrapper($pageIdOrPageCode) {
         return static::getPageFromCache($pageIdOrPageCode, function ($pageIdOrPageCode) {
-            /** @var CmsPage $pageClass */
             return CmsPage::find(
                 [
                     'OR' => [
-                        $pageClass::getPrimaryKeyColumnName() => (int)$pageIdOrPageCode,
+                        CmsPage::getPrimaryKeyColumnName() => (int)$pageIdOrPageCode,
                         'page_code' => $pageIdOrPageCode
                     ],
                 ],
@@ -309,7 +318,7 @@ abstract class CmsFrontendUtils {
      * @throws \InvalidArgumentException
      * @throws \BadMethodCallException
      */
-    static protected function getPageByUrl($url) {
+    static protected function getWrappedPageByUrl($url) {
         return static::getPageFromCache($url, function ($url) {
             $lastUrlSection = preg_quote(array_last(explode('/', trim($url, '/'))), null);
             $possiblePages = CmsPagesTable::select(['*', 'Parent' => ['*']], [
@@ -360,6 +369,7 @@ abstract class CmsFrontendUtils {
             }
             if (!empty($page->url_alias)) {
                 static::$loadedPages[static::normalizePageUrl($page->relative_url)] = $wrapper;
+                static::$loadedPages[static::normalizePageUrl($page->full_path)] = $wrapper;
             }
         } else if (!empty($cacheKeyForNotExistingPage)) {
             static::$loadedPages[static::normalizePageUrl($cacheKeyForNotExistingPage)] = $wrapper;

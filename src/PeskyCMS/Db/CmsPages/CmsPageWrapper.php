@@ -2,7 +2,6 @@
 
 namespace PeskyCMS\Db\CmsPages;
 
-use PeskyCMS\Db\CmsTexts\CmsTextWrapper;
 use PeskyORM\ORM\RecordInterface;
 use Swayok\Utils\StringUtils;
 
@@ -62,11 +61,11 @@ class CmsPageWrapper {
     }
 
     /**
-     * @return CmsTextWrapper
+     * @return CmsPageTexts
      * @throws \InvalidArgumentException
      */
     public function getTexts() {
-        return $this->getPage()->getLocalizedText();
+        return $this->getPage()->getLocalizedTexts();
     }
 
     /**

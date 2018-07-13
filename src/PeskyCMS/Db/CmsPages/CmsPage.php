@@ -4,7 +4,6 @@ namespace PeskyCMS\Db\CmsPages;
 
 use PeskyCMF\Db\Admins\CmfAdmin;
 use PeskyCMF\Db\CmfDbRecord;
-use PeskyCMS\Db\CmsTexts\CmsTextWrapper;
 
 /**
  * @property-read int         $id
@@ -14,10 +13,11 @@ use PeskyCMS\Db\CmsTexts\CmsTextWrapper;
  * @property-read string      $title
  * @property-read string      $comment
  * @property-read string      $texts
- * @property-read string      $texts_ar_array
- * @property-read \stdClass   $texts_ar_object
+ * @property-read array       $texts_as_array
+ * @property-read \stdClass   $texts_as_object
  * @property-read string      $url_alias
  * @property-read string      $relative_url
+ * @property-read string      $full_path
  * @property-read null|string $page_code
  * @property-read string      $images
  * @property-read array       $images_as_array
@@ -93,7 +93,7 @@ class CmsPage extends CmfDbRecord {
         self::TYPE_TEXT_ELEMENT,
         self::TYPE_MENU
     ];
-    /** @var CmsTextWrapper */
+    /** @var CmsPageTexts */
     protected $textsWrapper;
 
     public static function getTable(): CmsPagesTable {
@@ -113,19 +113,28 @@ class CmsPage extends CmfDbRecord {
     }
 
     /**
-     * @param bool $ignoreCache - remake CmsTextWrapper
-     * @return CmsTextWrapper
+     * @param bool $ignoreCache - remake CmsPageTexts
+     * @return CmsPageTexts
      * @throws \InvalidArgumentException
      */
-    public function getLocalizedText($ignoreCache = false) {
+    public function getLocalizedTexts($ignoreCache = false) {
         if ($ignoreCache || $this->textsWrapper === null) {
             $locale = app()->getLocale();
+            $localeShort = strtolower(substr($locale, 0, 2));
             $localeRedirects = setting()->fallback_languages();
-            if (is_array($localeRedirects) && !empty($localeRedirects[$locale])) {
+            if (is_array($localeRedirects) && !empty($localeRedirects)) {
                 // replace current locale by supported one. For example - replace 'ua' locale by 'ru'
-                $locale = $localeRedirects[$locale];
+                if (!empty($localeRedirects[$locale])) {
+                    $localeShort = substr($localeRedirects[$locale], 0, 2);
+                } else if (!empty($localeRedirects[$localeShort])) {
+                    $localeShort = substr($localeRedirects[$localeShort], 0, 2);
+                }
             }
-            $this->textsWrapper = new CmsTextWrapper($this, $locale, setting()->default_language());
+            $this->textsWrapper = new CmsPageTexts(
+                $this,
+                $localeShort,
+                substr(setting()->default_language(), 0, 2)
+            );
         }
         return $this->textsWrapper;
     }
