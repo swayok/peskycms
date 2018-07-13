@@ -180,12 +180,16 @@ abstract class CmsPagesScaffoldsHelper {
                 .parent()
                     .addClass('pn');
             parentIdSelect.selectpicker();
+            parentIdSelect
+                .css('z-index', '1');
             parentIdSelectContainer
                 .css('height', '32px')
                 .css('min-width', '150px')
                 .addClass('mn')
                 .find('button.dropdown-toggle')
                     .addClass('br-n')
+                    .css('position', 'relative')
+                    .css('z-index', '2')
                     .css('height', '32px')
                     .css('line-height', '32px')
                     .css('padding', '1px 30px 0 10px')
