@@ -17,6 +17,8 @@ class CmsPageTexts {
     protected $mainTexts;
     /** @var array */
     protected $fallbackTexts;
+     /** @var string */
+    protected $isContentProcessed;
 
     /** @var string */
     protected $browser_title;
@@ -26,8 +28,6 @@ class CmsPageTexts {
     protected $menu_title;
     /** @var string */
     protected $content;
-    /** @var string */
-    protected $contentProcessed;
     /** @var string */
     protected $meta_description;
     /** @var string */
@@ -177,13 +177,13 @@ class CmsPageTexts {
             $this->content = $this->getDataFromTexts('content');
         }
 
-        if ($processInserts && $this->contentProcessed === null) {
-            $this->contentProcessed = CmsFrontendUtils::processDataInsertsForText(
+        if ($processInserts && $this->isContentProcessed === null) {
+            $this->isContentProcessed = CmsFrontendUtils::processDataInsertsForText(
                 $this->content,
                 CmsFrontendUtils::makeCacheKeyForPageContentView($this->getPage(), $this->mainLanguage)
             );
         }
-        return $processInserts ? $this->contentProcessed : $this->content;
+        return $processInserts ? $this->isContentProcessed : $this->content;
     }
 
     /**
