@@ -14,9 +14,7 @@ use PeskyCMF\Scaffold\NormalTableScaffoldConfig;
 use PeskyCMS\Db\CmsPages\CmsPage;
 use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Scaffolds\Utils\CmsPagesScaffoldsHelper;
-use PeskyORM\Core\DbExpr;
 use Swayok\Html\Tag;
-use Swayok\Utils\Set;
 
 class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
 
@@ -51,7 +49,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 'Parent' => ['id', 'url_alias', 'parent_id']
             ])
             ->setOrderBy('id', 'asc')
-            ->setInvisibleColumns('url_alias')
+            ->setAdditionalColumnsToSelect('url_alias')
             ->setColumns([
                 DataGridConfig::ROW_ACTIONS_COLUMN_NAME,
                 'id' => DataGridColumn::create()
@@ -87,6 +85,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                 'Parent' => ['*'],
                 'Admin' => ['*']
             ])
+            ->setAdditionalColumnsToSelect('url_alias')
             ->addTab($this->translate('item_details.tab', 'general'), [
                 'id',
                 'title',

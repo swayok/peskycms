@@ -174,7 +174,7 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
 
     private function Parent() {
         return Relation::create('parent_id', Relation::BELONGS_TO, CmsPagesTable::class, 'id')
-            ->setDisplayColumnName('url_alias');
+            ->setDisplayColumnName('title');
     }
 
     private function Admin() {
