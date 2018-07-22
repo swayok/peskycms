@@ -16,7 +16,7 @@ abstract class CmsPagesScaffoldsHelper {
     static public function getConfigsForWysiwygDataInserts(ScaffoldConfig $scaffold) {
         $ret = [
             WysiwygFormInput::createDataInsertConfigWithArguments(
-                'insertPageData(":page_id", ":page_field")',
+                'insertCmsPageData(":page_id", ":page_field")',
                 $scaffold->translate('form.input.content_inserts', 'part_of_other_page'),
                 false,
                 [
@@ -38,7 +38,7 @@ abstract class CmsPagesScaffoldsHelper {
                 $scaffold->translate('form.input.content_inserts', 'page_insert_widget_title_template')
             ),
             WysiwygFormInput::createDataInsertConfigWithArguments(
-                'insertLinkToPage(":page_id", ":title")',
+                'insertLinkToCmsPage(":page_id", ":title")',
                 $scaffold->translate('form.input.content_inserts', 'link_to_other_page'),
                 false,
                 [
@@ -55,7 +55,7 @@ abstract class CmsPagesScaffoldsHelper {
                 $scaffold->translate('form.input.content_inserts', 'insert_link_to_page_widget_title_template')
             ),
             WysiwygFormInput::createDataInsertConfigWithArguments(
-                'insertPageData(":page_id", "content")',
+                'insertCmsPageData(":page_id", "content")',
                 $scaffold->translate('form.input.content_inserts', 'text_block'),
                 false,
                 [
