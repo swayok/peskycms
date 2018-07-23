@@ -69,14 +69,14 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                 return $value->getRecord()->existsInDb();
             })
             ->setValueGetter(function (RecordValue $value, $format = null) {
-                if (!$value->hasValue()) {
+                /** @var CmsPage $record */
+                $record = $value->getRecord();
+                if (!$record->hasValue('url_alias', false)) {
                     return null;
                 }
                 /** @var PeskyCmsAppSettings $appSettings */
                 $appSettings = app(PeskyCmfAppSettings::class);
                 $baseUrl = rtrim('/' . trim($appSettings::cms_pages_url_prefix(), '/'), '/');
-                /** @var CmsPage $record */
-                $record = $value->getRecord();
                 if (
                     (
                         $record->hasValue('parent_id', false)
@@ -102,12 +102,12 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                 return $value->getRecord()->existsInDb();
             })
             ->setValueGetter(function (RecordValue $value, $format = null) {
-                if (!$value->hasValue()) {
+                /** @var CmsPage $record */
+                $record = $value->getRecord();
+                if (!$record->hasValue('url_alias', false)) {
                     return null;
                 }
                 $baseUrl = '';
-                /** @var CmsPage $record */
-                $record = $value->getRecord();
                 if (
                     (
                         $record->hasValue('parent_id', false)
