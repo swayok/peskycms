@@ -69,6 +69,9 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                 return $value->getRecord()->existsInDb();
             })
             ->setValueGetter(function (RecordValue $value, $format = null) {
+                if (!$value->hasValue()) {
+                    return null;
+                }
                 /** @var PeskyCmsAppSettings $appSettings */
                 $appSettings = app(PeskyCmfAppSettings::class);
                 $baseUrl = rtrim('/' . trim($appSettings::cms_pages_url_prefix(), '/'), '/');
@@ -99,6 +102,9 @@ class CmsPagesTableStructure extends CmfDbTableStructure {
                 return $value->getRecord()->existsInDb();
             })
             ->setValueGetter(function (RecordValue $value, $format = null) {
+                if (!$value->hasValue()) {
+                    return null;
+                }
                 $baseUrl = '';
                 /** @var CmsPage $record */
                 $record = $value->getRecord();

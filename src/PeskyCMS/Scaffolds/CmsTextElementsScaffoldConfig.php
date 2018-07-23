@@ -64,7 +64,7 @@ class CmsTextElementsScaffoldConfig extends NormalTableScaffoldConfig {
         $itemDetailsConfig = parent::createItemDetailsConfig();
         $itemDetailsConfig
             ->readRelations([
-                'Admin', 'Texts'
+                'Admin'
             ])
             ->addTab($this->translate('item_details.tab', 'general'), [
                 'id',
@@ -131,7 +131,7 @@ class CmsTextElementsScaffoldConfig extends NormalTableScaffoldConfig {
                 return [
                     'title' => 'required|string|max:500',
                     'comment' => 'nullable|string|max:1000',
-                    'page_code' => 'regex:%^[a-zA-Z0-9_:-]*$%|unique:' . static::getTable()->getName() . ',page_code,{{id}},id',
+                    'page_code' => 'nullable|regex:%^[a-zA-Z0-9_:-]*$%|unique:' . static::getTable()->getName() . ',page_code,{{id}},id',
                 ];
             })
             ->setIncomingDataModifier(function (array $data) use ($pageClass) {
