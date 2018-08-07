@@ -13,6 +13,7 @@ use PeskyCMS\Db\CmsRedirects\CmsRedirect;
 use PeskyORM\ORM\RecordInterface;
 use Swayok\Html\EmptyTag;
 use Swayok\Html\Tag;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class CmsFrontendUtils {
 
@@ -65,12 +66,13 @@ abstract class CmsFrontendUtils {
      *      - string: path to view that will render the page;
      *      - \Closure - function (CmsPageWrapper $page) { return 'path.to.view'; }
      * @param \Closure $viewData - function (CmsPageWrapper $page) { return [] }. Returns array with data
+     * @param \Closure $pageNotFoundCallback - function () { abort(404); }. Returns a valid response or aborts request
      * to send to view in addition to 'texts' variable (CmsPageTexts).
-     * @return string - rendered $view
+     * @return string|Response - rendered $view
      * @throws \UnexpectedValueException
      * @throws \InvalidArgumentException
      */
-    static public function renderPage($url, $view, \Closure $viewData = null) {
+    static public function renderPage($url, $view, \Closure $viewData = null, \Closure $pageNotFoundCallback = null) {
         $url = strtolower(rtrim($url, '/'));
         // search for url in redirects
         /** @var CmsRedirect $redirectClass */
@@ -85,7 +87,11 @@ abstract class CmsFrontendUtils {
         }
         $wrappedPage = static::getWrappedPageByUrl($url);
         if (!$wrappedPage->isValid()) {
-            abort(404);
+            if ($pageNotFoundCallback) {
+                return $pageNotFoundCallback();
+            } else {
+                abort(HttpCode::NOT_FOUND);
+            }
         }
         $data = [];
         if (!empty($viewData)) {
