@@ -40,7 +40,7 @@ abstract class CmsFrontendUtils {
      * access to administration area. Otherwise this route will intercept it.
      * @return Route
      */
-    static public function addRouteForPages($routeAction, array $excludeUrlPrefixes = [], string $extension = '') {
+    static public function addRouteForPages($routeAction, array $excludeUrlPrefixes = [], string $extension = ''): Route {
         /** @var PeskyCmsAppSettings $appSettings */
         $appSettings = app(PeskyCmfAppSettings::class);
         $prefix = '/' . trim($appSettings::cms_pages_url_prefix(), '/');
@@ -117,14 +117,8 @@ abstract class CmsFrontendUtils {
      * @param int $pageIdOrPageCode
      * @param string $columnName
      * @return string
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PDOException
-     * @throws \BadMethodCallException
-     * @throws \InvalidArgumentException
      */
-    static public function getPageData($pageIdOrPageCode, $columnName = 'content') {
+    static public function getPageData($pageIdOrPageCode, $columnName = 'content'): string {
         $page = static::getPageWrapper($pageIdOrPageCode);
         if (!$page->isValid()) {
             return '';
@@ -137,15 +131,8 @@ abstract class CmsFrontendUtils {
      * @param null|string $linkText
      * @param bool $openInNewTab
      * @return Tag
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
-     * @throws \Swayok\Html\HtmlTagException
      */
-    static public function makeHtmlLinkToPageForInsert($pageIdOrPageCode, $linkText = null, $openInNewTab = false) {
+    static public function makeHtmlLinkToPageForInsert($pageIdOrPageCode, $linkText = null, $openInNewTab = false): Tag {
         $page = static::getPageWrapper($pageIdOrPageCode);
         if (!$page->isValid()) {
             return EmptyTag::create();
@@ -185,7 +172,7 @@ abstract class CmsFrontendUtils {
      * @param string $cacheKey
      * @return string
      */
-    static public function processDataInsertsForText($textWithInserts, $cacheKey) {
+    static public function processDataInsertsForText($textWithInserts, $cacheKey): string {
         static $compiled;
         if ($compiled === null) {
             $compiled = [];
@@ -218,14 +205,8 @@ abstract class CmsFrontendUtils {
      * Get rendered text block contents
      * @param string $pageCode
      * @return string
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static public function getTextBlock($pageCode) {
+    static public function getTextBlock($pageCode): string {
         return static::getPageData($pageCode, 'content');
     }
 
@@ -234,28 +215,16 @@ abstract class CmsFrontendUtils {
      * @param string $pageCode
      * @param null|string $language - 2-letter code of language
      * @return string
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static public function getMenu($pageCode) {
+    static public function getMenu($pageCode): string {
         return static::getPageData($pageCode, 'content');
     }
 
     /**
      * @param string $pageCode
      * @return string
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static public function getMenuHeader($pageCode) {
+    static public function getMenuHeader($pageCode): string {
         return static::getPageData($pageCode, 'menu_title');
     }
 
@@ -266,14 +235,8 @@ abstract class CmsFrontendUtils {
      *  - false: return list of strings like '<a href="/link/url">link content</a>'
      *  - true: return list of arrays in format: ['url' => '/link/url', 'text' => 'link content']
      * @return array
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static public function getLinksForMenu($pageCode, $parseLinks = false) {
+    static public function getLinksForMenu($pageCode, $parseLinks = false): array {
         $links = [];
         if (preg_match_all('%<a[^>]+href=([\'"])(.*?)\1[^>]+>(.*?)</a>%is', static::getMenu($pageCode), $matches)) {
             if ($parseLinks) {
@@ -293,14 +256,8 @@ abstract class CmsFrontendUtils {
     /**
      * @param int $pageIdOrPageCode
      * @return CmsPageWrapper
-     * @throws \PeskyORM\Exception\InvalidDataException
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static public function getPageWrapper($pageIdOrPageCode) {
+    static public function getPageWrapper($pageIdOrPageCode): CmsPageWrapper {
         return static::getPageFromCache($pageIdOrPageCode, function ($pageIdOrPageCode) {
             return CmsPage::find(
                 [
@@ -318,13 +275,8 @@ abstract class CmsFrontendUtils {
     /**
      * @param string $url
      * @return CmsPageWrapper
-     * @throws \PDOException
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static protected function getWrappedPageByUrl($url) {
+    static protected function getWrappedPageByUrl($url): CmsPageWrapper {
         return static::getPageFromCache($url, function ($url) {
             $lastUrlSection = preg_quote(array_last(explode('/', trim($url, '/'))), null);
             $possiblePages = CmsPagesTable::select(['*', 'Parent' => ['*']], [
@@ -345,13 +297,8 @@ abstract class CmsFrontendUtils {
      * @param string $cacheKey
      * @param \Closure $default
      * @return CmsPageWrapper
-     * @throws \UnexpectedValueException
-     * @throws \PeskyORM\Exception\OrmException
-     * @throws \PDOException
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
      */
-    static protected function getPageFromCache($cacheKey, \Closure $default) {
+    static protected function getPageFromCache($cacheKey, \Closure $default): CmsPageWrapper {
         $cacheKey = static::normalizePageUrl($cacheKey);
         if (!static::hasPageInCache($cacheKey)) {
             static::savePageToCache($default($cacheKey), $cacheKey);
@@ -386,7 +333,7 @@ abstract class CmsFrontendUtils {
      * @param string $cacheKey
      * @return bool
      */
-    static protected function hasPageInCache($cacheKey) {
+    static protected function hasPageInCache($cacheKey): bool {
         return array_key_exists($cacheKey, static::$loadedPages);
     }
 
@@ -394,7 +341,7 @@ abstract class CmsFrontendUtils {
      * @param $url
      * @return string
      */
-    static protected function normalizePageUrl($url) {
+    static protected function normalizePageUrl($url): string {
         return strtolower(rtrim((string)$url, '/'));
     }
 
@@ -403,7 +350,7 @@ abstract class CmsFrontendUtils {
      * @param $language
      * @return string
      */
-    static public function makeCacheKeyForPageContentView($page, $language) {
+    static public function makeCacheKeyForPageContentView($page, $language): string {
         return 'page-' . $page->id . '-lang-' . $language . '-updated-at-' . $page->updated_at_as_unix_ts;
     }
 
