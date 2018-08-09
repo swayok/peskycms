@@ -69,12 +69,12 @@ use PeskyCMF\Db\CmfDbRecord;
  */
 class CmsPage extends CmfDbRecord {
 
-    const TYPE_PAGE = 'page';
-    const TYPE_CATEGORY = 'category';
-    const TYPE_ITEM = 'item';
-    const TYPE_NEWS = 'news';
-    const TYPE_TEXT_ELEMENT = 'text_element';
-    const TYPE_MENU = 'menu';
+    public const TYPE_PAGE = 'page';
+    public const TYPE_CATEGORY = 'category';
+    public const TYPE_ITEM = 'item';
+    public const TYPE_NEWS = 'news';
+    public const TYPE_TEXT_ELEMENT = 'text_element';
+    public const TYPE_MENU = 'menu';
 
     static protected $types = [
         self::TYPE_PAGE,
@@ -100,13 +100,13 @@ class CmsPage extends CmfDbRecord {
         return CmsPagesTable::getInstance();
     }
 
-    static public function getTypes($asOptions = false) {
+    static public function getTypes($asOptions = false): array {
         return static::toOptions(static::$types, $asOptions, function ($value) {
             return cmfTransCustom('.cms_pages.type.' . $value);
         }, true);
     }
 
-    static public function getTypesWithoutUrls($asOptions = false) {
+    static public function getTypesWithoutUrls($asOptions = false): array {
         return static::toOptions(static::$typesWithoutUrls, $asOptions, function ($value) {
             return cmfTransCustom('.cms_pages.type.' . $value);
         }, true);
@@ -117,7 +117,7 @@ class CmsPage extends CmfDbRecord {
      * @return CmsPageTexts
      * @throws \InvalidArgumentException
      */
-    public function getLocalizedTexts($ignoreCache = false) {
+    public function getLocalizedTexts($ignoreCache = false): CmsPageTexts {
         if ($ignoreCache || $this->textsWrapper === null) {
             $locale = app()->getLocale();
             $localeShort = strtolower(substr($locale, 0, 2));
@@ -143,7 +143,7 @@ class CmsPage extends CmfDbRecord {
      * Check if page is allowed to be displayed to user
      * @return bool
      */
-    public function isValid() {
+    public function isValid(): bool {
         return $this->existsInDb() && $this->is_published;
     }
 

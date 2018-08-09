@@ -59,28 +59,28 @@ class CmsPageTexts {
     /**
      * @return string
      */
-    public function getMainLanguage() {
+    public function getMainLanguage(): string {
         return $this->mainLanguage;
     }
 
     /**
      * @return string
      */
-    public function getFallbackLanguage() {
+    public function getFallbackLanguage(): string {
         return $this->fallbackLanguage;
     }
 
     /**
      * @return CmsPage
      */
-    public function getPage() {
+    public function getPage(): CmsPage {
         return $this->page;
     }
 
     /**
      * @return array
      */
-    protected function getMainTexts() {
+    protected function getMainTexts(): array {
         if ($this->mainTexts === null) {
             $this->mainTexts = [];
             $texts = array_get($this->getPage()->texts_as_array, $this->mainLanguage, []);
@@ -97,7 +97,7 @@ class CmsPageTexts {
     /**
      * @return array
      */
-    protected function getFallbackTexts() {
+    protected function getFallbackTexts(): array {
         if ($this->fallbackTexts === null) {
             $this->fallbackTexts = [];
             if (!empty($this->fallbackLanguage)) {
@@ -141,7 +141,7 @@ class CmsPageTexts {
     /**
      * @return string
      */
-    public function browser_title() {
+    public function browser_title(): string {
         if ($this->browser_title === null) {
             $this->browser_title = trim((string)$this->getDataFromTexts('browser_title', 'title'));
         }
@@ -151,7 +151,7 @@ class CmsPageTexts {
     /**
      * @return string
      */
-    public function title() {
+    public function title(): string {
         if ($this->title === null) {
             $this->title = trim((string)$this->getDataFromTexts('title'));
         }
@@ -161,7 +161,7 @@ class CmsPageTexts {
     /**
      * @return string
      */
-    public function menu_title() {
+    public function menu_title(): string {
         if ($this->menu_title === null) {
             $this->menu_title = trim((string)$this->getDataFromTexts('menu_title', 'title'));
         }
@@ -172,7 +172,7 @@ class CmsPageTexts {
      * @param bool $processInserts - true: replace all data inserts by real data
      * @return string
      */
-    public function content($processInserts = true) {
+    public function content($processInserts = true): string {
         if ($this->content === null) {
             $this->content = $this->getDataFromTexts('content');
         }
@@ -189,7 +189,7 @@ class CmsPageTexts {
     /**
      * @return string
      */
-    public function meta_description() {
+    public function meta_description(): string {
         if ($this->meta_description === null) {
             $this->meta_description = trim((string)$this->getDataFromTexts('meta_description'));
         }
@@ -199,7 +199,7 @@ class CmsPageTexts {
     /**
      * @return string
      */
-    public function meta_keywords() {
+    public function meta_keywords(): string {
         if ($this->meta_keywords === null) {
             $this->meta_keywords = trim((string)$this->getDataFromTexts('meta_keywords'));
         }

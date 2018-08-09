@@ -64,67 +64,67 @@ class CmsPageWrapper {
      * @return CmsPageTexts
      * @throws \InvalidArgumentException
      */
-    public function getTexts() {
+    public function getTexts(): CmsPageTexts {
         return $this->getPage()->getLocalizedTexts();
     }
 
     /**
      * @return string
      */
-    protected function getContent() {
+    public function getContent(): string {
         return $this->getTexts()->content(true);
     }
 
     /**
      * @return string
      */
-    protected function getMenuTitle() {
+    public function getMenuTitle(): string {
         return $this->getTexts()->menu_title();
     }
 
     /**
      * @return string
      */
-    protected function getTitle() {
+    public function getTitle(): string {
         return $this->getTexts()->title();
     }
 
     /**
      * @return string
      */
-    protected function getBrowserTitle() {
+    public function getBrowserTitle(): string {
         return $this->getTexts()->browser_title();
     }
 
     /**
      * @return string
      */
-    protected function getMetaDescription() {
+    public function getMetaDescription(): string {
         return $this->getTexts()->meta_description();
     }
 
     /**
      * @return string
      */
-    protected function getMetaKeywords() {
+    public function getMetaKeywords(): string {
         return $this->getTexts()->meta_keywords();
     }
 
     /**
      * @return string
      */
-    protected function getPageHtmlId() {
+    public function getPageHtmlId(): string {
         return strtolower(preg_replace('%[^a-zA-Z0-9_]+%', '-', $this->getPage()->page_code ?: $this->getPage()->relative_url));
     }
 
     /**
      * @return bool
      */
-    public function isValid() {
+    public function isValid(): bool {
         return $this->getPage()->isValid();
     }
 
-    public function sendMetaTagsAndPageTitleSectionToLayout() {
+    public function sendMetaTagsAndPageTitleSectionToLayout(): void {
         \View::startSection('meta-description', $this->getMetaDescription());
         \View::startSection('meta-keywords', $this->getMetaKeywords());
         \View::startSection('browser-title', $this->getBrowserTitle());
