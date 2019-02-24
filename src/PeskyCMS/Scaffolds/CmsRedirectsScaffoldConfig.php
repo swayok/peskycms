@@ -19,7 +19,7 @@ class CmsRedirectsScaffoldConfig extends NormalTableScaffoldConfig {
     protected $isDeleteAllowed = true;
 
     public static function getTable() {
-        return CmsRedirectsTable::class;
+        return CmsRedirectsTable::getInstance();
     }
 
     /**
