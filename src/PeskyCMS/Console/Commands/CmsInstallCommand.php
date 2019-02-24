@@ -55,11 +55,11 @@ class CmsInstallCommand extends CmfCommand {
         $this->line('1. Add ' . PeskyCmsServiceProvider::class . ' to you app.providers config (if you do not use package discovery)');
         $this->line('2. Run "php artisan migrate" to create tables in database');
         $this->line('3. Add next classes to your \'resourses\' array in admin\'s section config file (usually config/admin.php)');
-        $this->line('    ' . CmsPagesScaffoldConfig::class . ':class');
-        $this->line('    ' . CmsMenusScaffoldConfig::class . ':class');
-        $this->line('    ' . CmsNewsScaffoldConfig::class . ':class');
-        $this->line('    ' . CmsTextElementsScaffoldConfig::class . ':class');
-        $this->line('    ' . CmsRedirectsScaffoldConfig::class . ':class');
+        $this->line('       \\' . CmsPagesScaffoldConfig::class . '::class,');
+        $this->line('       \\' . CmsMenusScaffoldConfig::class . '::class,');
+        $this->line('       \\' . CmsNewsScaffoldConfig::class . '::class,');
+        $this->line('       \\' . CmsTextElementsScaffoldConfig::class . '::class,');
+        $this->line('       \\' . CmsRedirectsScaffoldConfig::class . '::class,');
     }
 
 
