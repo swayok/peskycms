@@ -3,12 +3,14 @@
 namespace PeskyCMS\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use PeskyCMF\Providers\PeskyCmfServiceProvider;
 use PeskyCMS\CmsFrontendUtils;
 use PeskyCMS\Console\Commands\CmsInstallCommand;
 
 class PeskyCmsServiceProvider extends ServiceProvider {
 
     public function register() {
+        $this->app->register(PeskyCmfServiceProvider::class);
         $this->registerCommands();
     }
 

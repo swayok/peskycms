@@ -22,8 +22,14 @@ class CmsInstallCommand extends CmfCommand {
     }
 
     public function handle() {
-        if (!$this->confirm('Have you previously installed PeskyCMF?', false)) {
-            $this->call('cmf:install');
+        if ($this->confirm('Have you previously installed PeskyCMF?', false) === false) {
+            $this->line('> Running command cmf:install...');
+            $code = $this->call('cmf:install');
+            if ($code !== 0) {
+                $this->line('- Failed.');
+                return -1;
+            }
+            $this->line('+ Done.');
         }
         $appSettingsFilePath = app_path('AppSettings.php');
         if (File::exist($appSettingsFilePath)) {
@@ -45,6 +51,7 @@ class CmsInstallCommand extends CmfCommand {
         }
         $this->extender();
         $this->outro();
+        return 0;
     }
 
     protected function extender() {
