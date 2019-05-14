@@ -114,7 +114,7 @@ abstract class CmsPagesScaffoldsHelper {
                 /** @var CmsPage $pageData */
                 foreach ($pages as $pageData) {
                     if (!array_key_exists($pageData->type, $typesTrans)) {
-                        $typesTrans[$pageData->type] = $scaffold->translate('types', $pageData->type);
+                        $typesTrans[$pageData->type] = $scaffold->translate('type', $pageData->type);
                     }
                     if (!array_key_exists($typesTrans[$pageData->type], $options)) {
                         $options[$typesTrans[$pageData->type]] = [];
