@@ -197,6 +197,7 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                     'comment' => 'nullable|string|max:1000',
                     'url_alias' => 'required|regex:%^/[a-z0-9_/-]*$%|unique_page_url',
                     'page_code' => 'nullable|regex:%^[a-zA-Z0-9_:-]*$%|unique:' . static::getTable()->getName() . ',page_code,{{id}},id',
+                    'texts' => 'nullable|array'
                 ];
                 foreach (setting()->languages() as $lang => $lebel) {
                     $validators["texts.$lang.browser_title"] = "required_with:texts.$lang.content";

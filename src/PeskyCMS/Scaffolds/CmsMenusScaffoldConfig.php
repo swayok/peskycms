@@ -126,6 +126,7 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                     'title' => 'required|string|max:500',
                     'comment' => 'nullable|string|max:1000',
                     'page_code' => 'nullable|regex:%^[a-zA-Z0-9_:-]*$%|unique: ' . static::getTable()->getName() . ',page_code,{{id}},id',
+                    'texts' => 'nullable|array'
                 ];
             })
             ->setIncomingDataModifier(function (array $data) use ($pageClass) {
