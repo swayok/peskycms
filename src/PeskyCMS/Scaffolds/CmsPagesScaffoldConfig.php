@@ -168,11 +168,11 @@ class CmsPagesScaffoldConfig extends NormalTableScaffoldConfig {
                         $rendererConfig
                             ->setIsRequired(true)
                             ->setPrefixText('<div class="ib" id="parent-id-url-alias"></div>')
-                            ->addAttribute('data-regexp', '^/[a-z0-9_/-]+$')
+                            ->addAttribute('data-regexp', '^[a-z0-9_/-]+$')
                             ->addAttribute('placeholder', $this->translate('form.input', 'url_alias_placeholder'));
                     })
                     ->setSubmittedValueModifier(function ($value) {
-                        return $value === '/' ? $value : preg_replace('%//+%', '/', rtrim($value, '/'));
+                        return $value === '/' ? $value : '/' . preg_replace('%//+%', '/', trim($value, '/'));
                     })
                     ->addJavaScriptBlock(function (FormInput $valueViewer) {
                         return CmsPagesScaffoldsHelper::getJsCodeForUrlAliasInput($valueViewer);
