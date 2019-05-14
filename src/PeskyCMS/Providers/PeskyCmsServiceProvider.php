@@ -11,6 +11,7 @@ class PeskyCmsServiceProvider extends ServiceProvider {
 
     public function register() {
         $this->app->register(PeskyCmfServiceProvider::class);
+        $this->app->singleton(CmsFrontendUtils::class);
         $this->registerCommands();
     }
 

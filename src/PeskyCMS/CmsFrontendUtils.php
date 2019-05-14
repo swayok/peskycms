@@ -2,7 +2,6 @@
 
 namespace PeskyCMS;
 
-use App\AppSettings;
 use Illuminate\Routing\Route;
 use PeskyCMF\HttpCode;
 use PeskyCMF\PeskyCmfAppSettings;
@@ -15,8 +14,7 @@ use Swayok\Html\EmptyTag;
 use Swayok\Html\Tag;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class CmsFrontendUtils {
-
+class CmsFrontendUtils {
     /** @var CmsPageWrapper[] */
     static protected $loadedPages = [];
 
@@ -234,9 +232,10 @@ abstract class CmsFrontendUtils {
      * @param bool $parseLinks
      *  - false: return list of strings like '<a href="/link/url">link content</a>'
      *  - true: return list of arrays in format: ['url' => '/link/url', 'text' => 'link content']
+     * @param int $maxNestingLevel - max level of menu items nesting. 0 = no nesting.
      * @return array
      */
-    static public function getLinksForMenu($pageCode, $parseLinks = false): array {
+    static public function getLinksForMenu($pageCode, bool $parseLinks = false, int $maxNestingLevel = 0): array {
         $links = [];
         if (preg_match_all('%<a[^>]+href=([\'"])(.*?)\1[^>]+>(.*?)</a>%is', static::getMenu($pageCode), $matches)) {
             if ($parseLinks) {
