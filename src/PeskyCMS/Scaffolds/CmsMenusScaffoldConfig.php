@@ -89,6 +89,7 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
                     ->setValueConverter(function () use ($langLabel) {
                         return $langLabel;
                     }),
+                "texts:$langId.menu_title" => ValueCell::create()->setNameForTranslation('texts.menu_title'),
 //                "texts:$langId.comment" => ValueCell::create()->setNameForTranslation('texts.comment'),
                 "texts:$langId.content" => ValueCell::create()
                     ->setType(ValueCell::TYPE_HTML)
@@ -139,6 +140,7 @@ class CmsMenusScaffoldConfig extends NormalTableScaffoldConfig {
         foreach (setting()->languages() as $langId => $langLabel) {
             $formConfig->addTab($this->translate('form.tab', 'texts', ['language' => $langLabel]), [
                 "texts:$langId.id" => FormInput::create()->setType(FormInput::TYPE_HIDDEN),
+                "texts:$langId.menu_title" => FormInput::create()->setNameForTranslation('texts.menu_title'),
                 "texts:$langId.comment" => FormInput::create()->setNameForTranslation('texts.comment'),
                 "texts:$langId.content" => WysiwygFormInput::create()
                     ->setRelativeImageUploadsFolder('/assets/wysiwyg/pages')
