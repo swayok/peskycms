@@ -144,7 +144,7 @@ class CmsFrontendUtils {
         }
         return Tag::a()
             ->setContent(trim(stripslashes($linkText)))
-            ->setHref(rtrim($page->relative_url, '/'))
+            ->setHref('/' . trim($page->relative_url, '/'))
             ->setAttribute('target', $openInNewTab ? '_blank' : null);
     }
 
