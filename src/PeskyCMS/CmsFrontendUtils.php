@@ -9,6 +9,7 @@ use PeskyCMS\Db\CmsPages\CmsPage;
 use PeskyCMS\Db\CmsPages\CmsPagesTable;
 use PeskyCMS\Db\CmsPages\CmsPageWrapper;
 use PeskyCMS\Db\CmsRedirects\CmsRedirect;
+use PeskyORM\Core\DbExpr;
 use PeskyORM\ORM\RecordInterface;
 use Swayok\Html\EmptyTag;
 use Swayok\Html\Tag;
@@ -71,7 +72,7 @@ class CmsFrontendUtils {
      * @throws \InvalidArgumentException
      */
     static public function renderPage($url, $view, \Closure $viewData = null, \Closure $pageNotFoundCallback = null) {
-        $url = strtolower(rtrim($url, '/'));
+        $url = '/' . strtolower(trim($url, '/'));
         // search for url in redirects
         /** @var CmsRedirect $redirectClass */
         $redirect = CmsRedirect::find([
@@ -351,6 +352,34 @@ class CmsFrontendUtils {
      */
     static public function makeCacheKeyForPageContentView($page, $language): string {
         return 'page-' . $page->id . '-lang-' . $language . '-updated-at-' . $page->updated_at_as_unix_ts;
+    }
+
+    /**
+     * @param int $pageNumber
+     * @param int $itemsLimit
+     * @return CmsPageWrapper[]
+     */
+    static public function getNewsItems(int $pageNumber, int $itemsLimit = 10): array {
+        $offset = $itemsLimit * max(0, $pageNumber - 1);
+        $items = CmsPagesTable::select('*', [
+            'type' => CmsPage::TYPE_NEWS,
+            'publish_at::date <=' => DbExpr::create('NOW()::date'),
+            'ORDER' => ['publish_at' => 'DESC'],
+            'LIMIT' => $itemsLimit,
+            'OFFSET' => $offset,
+        ]);
+        $ret = [];
+        foreach ($items as $item) {
+            $ret[] = new CmsPageWrapper($item);
+        }
+        return $ret;
+    }
+
+    static public function getNewsItemsTotalCount(): int {
+        return CmsPagesTable::count([
+            'type' => CmsPage::TYPE_NEWS,
+            'publish_at::date <=' => DbExpr::create('NOW()::date'),
+        ]);
     }
 
 }
