@@ -27,7 +27,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=5.6",
-        "laravel/framework": "^5.2",
+        "laravel/framework": ">=5.3|>=6.0",
         "swayok/peskycmf": "v2.x-dev",
         "swayok/peskyorm": "v2.x-dev"
     },
