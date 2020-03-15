@@ -68,10 +68,8 @@ class CmsFrontendUtils {
      * @param \Closure $pageNotFoundCallback - function () { abort(404); }. Returns a valid response or aborts request
      * to send to view in addition to 'texts' variable (CmsPageTexts).
      * @return string|Response - rendered $view
-     * @throws \UnexpectedValueException
-     * @throws \InvalidArgumentException
      */
-    static public function renderPage($url, $view, \Closure $viewData = null, \Closure $pageNotFoundCallback = null) {
+    static public function renderPage(string $url, string $view, ?\Closure $viewData = null, ?\Closure $pageNotFoundCallback = null) {
         $url = '/' . strtolower(trim($url, '/'));
         // search for url in redirects
         /** @var CmsRedirect $redirectClass */
@@ -85,6 +83,49 @@ class CmsFrontendUtils {
             );
         }
         $wrappedPage = static::getWrappedPageByUrl($url);
+        return self::renderWrappedPage($wrappedPage, $view, $viewData, $pageNotFoundCallback);
+    }
+
+    /**
+     * Render $view with $viewData for page with $pageIdOrPageCode.
+     * If page for $pageIdOrPageCode was not found - 404 page will be shown;
+     * 'texts' variable (CmsPageTexts) will be additionally passed to a $view;
+     * Data passed to $view:
+     * @section('meta-description')
+     * @section('meta-keywords')
+     * @section('browser-title')
+     *      $page CmsPageWrapper
+     * @param string|int $pageIdOrPageCode - page's custom ID (page_code column)
+     * @param string|\Closure $view
+     *      - string: path to view that will render the page;
+     *      - \Closure - function (CmsPageWrapper $page) { return 'path.to.view'; }
+     * @param \Closure $viewData - function (CmsPageWrapper $page) { return [] }. Returns array with data
+     * @param \Closure $pageNotFoundCallback - function () { abort(404); }. Returns a valid response or aborts request
+     * to send to view in addition to 'texts' variable (CmsPageTexts).
+     * @return string|Response - rendered $view
+     */
+    static public function renderPageByIdOrCode($pageIdOrPageCode, string $view, ?\Closure $viewData = null, ?\Closure $pageNotFoundCallback = null) {
+        $wrappedPage = static::getPageWrapper($pageIdOrPageCode);
+        return self::renderWrappedPage($wrappedPage, $view, $viewData, $pageNotFoundCallback);
+    }
+
+    /**
+     * 'texts' variable (CmsPageTexts) will be additionally passed to a $view;
+     * Data passed to $view:
+     * @section('meta-description')
+     * @section('meta-keywords')
+     * @section('browser-title')
+     *      $page CmsPageWrapper
+     * @param CmsPageWrapper $wrappedPage
+     * @param string|\Closure $view
+     *      - string: path to view that will render the page;
+     *      - \Closure - function (CmsPageWrapper $page) { return 'path.to.view'; }
+     * @param \Closure $viewData - function (CmsPageWrapper $page) { return [] }. Returns array with data
+     * @param \Closure $pageNotFoundCallback - function () { abort(404); }. Returns a valid response or aborts request
+     * to send to view in addition to 'texts' variable (CmsPageTexts).
+     * @return string|Response - rendered $view
+     */
+    static public function renderWrappedPage(CmsPageWrapper $wrappedPage, string $view, ?\Closure $viewData = null, ?\Closure $pageNotFoundCallback = null) {
         if (!$wrappedPage->isValid()) {
             if ($pageNotFoundCallback) {
                 return $pageNotFoundCallback();
