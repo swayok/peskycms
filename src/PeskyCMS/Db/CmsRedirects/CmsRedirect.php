@@ -39,7 +39,7 @@ class CmsRedirect extends CmfDbRecord {
         return CmsRedirectsTable::getInstance();
     }
 
-    protected function afterSave($isCreated, array $updatedColumns = []) {
+    protected function afterSave(bool $isCreated, array $updatedColumns = []) {
         parent::afterSave($isCreated, $updatedColumns);
         /** @var CmsPagesTable $pagesTable */
         $pagesTable = static::getTable();
